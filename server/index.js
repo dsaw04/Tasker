@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import route from "./backend/src/routes/taskRoutes.js";
+import route from "./routes/taskRoutes.js";
 
 dotenv.config();
 
