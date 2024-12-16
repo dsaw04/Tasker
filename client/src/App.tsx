@@ -4,37 +4,59 @@ import { useDeleteTask } from "./hooks/useDeleteTask";
 import TaskList from "./components/TaskList";
 import Modal from "./components/Modal";
 import AddTaskForm from "./components/AddTaskForm";
+import UpdateTaskModal from "./components/UpdateTaskModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const { tasks, loading, error, refetch } = useTasks();
 
-  // State to manage the modal content and visibility
+  // State to manage modal content and visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<"add" | "delete" | null>(
-    null
-  );
+  const [modalContent, setModalContent] = useState<
+    "add" | "delete" | "update" | null
+  >(null);
 
   const [selectedTask, setSelectedTask] = useState<{
     id: string;
-    title: string;
+    description: string;
+    date: string;
+    status: string;
   } | null>(null);
 
-  const { isDeleting, deleteTask } = useDeleteTask(refetch); // Hook for delete logic
+  const { isDeleting, deleteTask } = useDeleteTask(refetch);
 
-  // Functions to handle modal opening
+  // Open Add Task Modal
   const handleOpenAddModal = () => {
     setModalContent("add");
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (taskId: string, taskName: string) => {
-    setSelectedTask({ id: taskId, title: taskName });
+  // Open Delete Task Modal
+  const handleOpenDeleteModal = (taskId: string, taskDescription: string) => {
+    setSelectedTask({
+      id: taskId,
+      description: taskDescription,
+      date: "",
+      status: "",
+    });
     setModalContent("delete");
     setIsModalOpen(true);
   };
 
+  // Open Update Task Modal
+  const handleOpenUpdateModal = (
+    taskId: string,
+    description: string,
+    date: string,
+    status: string
+  ) => {
+    setSelectedTask({ id: taskId, description, date, status });
+    setModalContent("update");
+    setIsModalOpen(true);
+  };
+
+  // Close Modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalContent(null);
@@ -72,7 +94,11 @@ function App() {
           {loading && <p>Loading tasks...</p>}
           {error && <p className="text-red-500">Error: {error}</p>}
           {!loading && !error && (
-            <TaskList tasks={tasks} onDelete={handleOpenDeleteModal} />
+            <TaskList
+              tasks={tasks}
+              onDelete={handleOpenDeleteModal}
+              onUpdate={handleOpenUpdateModal}
+            />
           )}
         </div>
 
@@ -94,7 +120,7 @@ function App() {
               </h2>
               <p>
                 This action will permanently delete the task{" "}
-                <strong>'{selectedTask.title}'</strong>. Are you sure?
+                <strong>'{selectedTask.description}'</strong>. Are you sure?
               </p>
               <div className="flex gap-2 justify-end mt-4">
                 <button
@@ -105,7 +131,7 @@ function App() {
                 </button>
                 <button
                   onClick={async () => {
-                    await deleteTask(selectedTask.id); // Call delete hook
+                    await deleteTask(selectedTask.id);
                     handleCloseModal();
                   }}
                   className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
@@ -115,6 +141,20 @@ function App() {
                 </button>
               </div>
             </>
+          )}
+
+          {modalContent === "update" && selectedTask && (
+            <UpdateTaskModal
+              isOpen={isModalOpen}
+              task={{
+                id: selectedTask.id,
+                description: selectedTask.description,
+                date: selectedTask.date,
+                status: selectedTask.status,
+              }}
+              onSuccess={refetch}
+              onClose={handleCloseModal}
+            />
           )}
         </Modal>
       </div>

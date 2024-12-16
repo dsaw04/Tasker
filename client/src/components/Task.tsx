@@ -8,7 +8,13 @@ interface TaskProps {
   title: string;
   date: Date;
   status: string;
-  onDelete: (taskId: string, taskName: string) => void; // Handler for delete action
+  onDelete: (taskId: string, taskName: string) => void;
+  onUpdate: (
+    taskId: string,
+    taskName: string,
+    taskDate: string,
+    taskStatus: string
+  ) => void;
 }
 
 export default function Task({
@@ -17,8 +23,8 @@ export default function Task({
   date,
   status,
   onDelete,
+  onUpdate,
 }: TaskProps) {
-  // Function to format date
   const formatDate = (date: Date) => {
     const options: Intl.DateTimeFormatOptions = {
       weekday: "long",
@@ -34,7 +40,7 @@ export default function Task({
 
   return (
     <div className="task-item w-full p-4 shadow-xl justify-between gap-2 flex border border-gray-200 rounded-3xl">
-      <div className="">
+      <div>
         <h3 className="font-lexend font-medium text-xl text-zinc-900">
           {title}
         </h3>
@@ -48,14 +54,17 @@ export default function Task({
         </p>
       </div>
       <div className="flex self-center justify-self-end gap-2">
-        <button className="transition-transform duration-100 ease-in-out transform hover:scale-105">
+        <button
+          onClick={() => onUpdate(taskId, title, date.toISOString(), status)}
+          className="transition-transform duration-100 ease-in-out transform hover:scale-105"
+        >
           <FontAwesomeIcon
             icon={faPenToSquare}
             className="p-2 border rounded-lg hover:border-2"
           />
         </button>
         <button
-          onClick={() => onDelete(taskId, title)} // Call delete handler
+          onClick={() => onDelete(taskId, title)}
           className="transition-transform duration-100 ease-in-out transform hover:scale-105"
         >
           <FontAwesomeIcon

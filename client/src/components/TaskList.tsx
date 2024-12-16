@@ -9,14 +9,19 @@ interface TaskType {
 
 interface TaskListProps {
   tasks: TaskType[];
-  onDelete: (taskId: string, taskName: string) => void; // Added onDelete prop
+  onDelete: (taskId: string, taskName: string) => void;
+  onUpdate: (
+    taskId: string,
+    taskName: string,
+    taskDate: string,
+    taskStatus: string
+  ) => void;
 }
 
-export default function TaskList({ tasks, onDelete }: TaskListProps) {
-  // Sort tasks by date: closest to the present at the top
-  const sortedTasks = [...tasks].sort((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
-  });
+export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
+  const sortedTasks = [...tasks].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
 
   return (
     <div className="task-list">
@@ -30,7 +35,8 @@ export default function TaskList({ tasks, onDelete }: TaskListProps) {
             title={task.description}
             date={task.date}
             status={task.status}
-            onDelete={onDelete} // Pass onDelete handler to Task
+            onDelete={onDelete}
+            onUpdate={onUpdate}
           />
         </div>
       ))}
