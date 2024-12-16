@@ -17,3 +17,11 @@ body {
   height: 100%;
   background-color: white;
 }
+
+.react-datepicker-wrapper {
+  width: 100% !important;
+}
+
+.react-datepicker__input-container input {
+  width: 100% !important;
+}
