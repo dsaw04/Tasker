@@ -19,13 +19,13 @@ export const useTasks = () => {
     setError(null);
 
     try {
-      const response = await axios.get<TaskType[]>(
-        "http://localhost:8000/api/tasks"
-      );
-      const transformedTasks = response.data.map((task) => ({
+      const response = await axios.get("http://localhost:8000/api/tasks");
+      const transformedTasks = response.data.data.map((task: TaskType) => ({
         ...task,
-        date: new Date(task.date), // Convert date string to Date object
+        date: new Date(task.date),
       }));
+
+      console.log("Transformed Tasks:", transformedTasks);
       setTasks(transformedTasks);
     } catch (err) {
       if (axios.isAxiosError(err)) {
