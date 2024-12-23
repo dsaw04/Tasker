@@ -7,15 +7,16 @@ import Modal from "./components/Modal";
 import AddTaskForm from "./components/AddTaskForm";
 import UpdateTaskModal from "./components/UpdateTaskModal";
 import SearchBar from "./components/SearchBar";
+import { sortTasks } from "./utils/sortTasks"; // Import sorting utility
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSortDown } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const { tasks, loading, error, refetch } = useTasks();
-  const { results, searchTasks } = useSearchTask(); // Manage search results
+  const { results, searchTasks } = useSearchTask(); // Hook for real-time search
   const [filteredTasks, setFilteredTasks] = useState(tasks);
+  const [sortOption, setSortOption] = useState("chronological"); // Default sort option
 
-  // State to manage modal content and visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<
     "add" | "delete" | "update" | null
@@ -70,16 +71,17 @@ function App() {
   // Handle Search
   const handleSearch = (query: string) => {
     if (!query) {
-      setFilteredTasks(tasks); // Reset to all tasks if query is empty
+      setFilteredTasks(sortTasks(tasks, sortOption)); // Reset to all tasks if query is empty
     } else {
-      searchTasks(query); // Perform search
+      searchTasks(query);
     }
   };
 
-  // Update filtered tasks on search results change
+  // Update filtered tasks on search and sort changes
   useEffect(() => {
-    setFilteredTasks(results.length ? results : tasks);
-  }, [results, tasks]);
+    const tasksToDisplay = results.length ? results : tasks;
+    setFilteredTasks(sortTasks(tasksToDisplay, sortOption));
+  }, [results, tasks, sortOption]);
 
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
@@ -94,17 +96,74 @@ function App() {
           </h2>
         </div>
         <SearchBar onSearch={handleSearch} />
-        {/* Add Task Button */}
+
+        {/* Add Task and Sort Dropdown */}
         <div className="py-8 flex items-center justify-between">
           <h1 className="font-lexend font-semibold text-4xl text-zinc-900">
             Upcoming
           </h1>
-          <button
-            onClick={handleOpenAddModal}
-            className="flex justify-center items-center w-10 h-10 rounded-full border hover:bg-gray-200"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
+          <div className="flex gap-2 relative">
+            <button
+              onClick={handleOpenAddModal}
+              className="flex justify-center items-center w-10 h-10 rounded-full border hover:bg-gray-200"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+
+            <div className="dropdown dropdown-hover dropdown-bottom dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="flex justify-center items-center w-10 h-10 rounded-full border hover:bg-gray-200"
+              >
+                <FontAwesomeIcon icon={faSortDown} />
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+              >
+                <li>
+                  <a
+                    onClick={() => setSortOption("chronological")}
+                    className={`cursor-pointer flex items-center ${
+                      sortOption === "chronological" ? "font-bold" : ""
+                    }`}
+                  >
+                    Chronological
+                    {sortOption === "chronological" && (
+                      <span className="text-green-500 mr-2">✔</span>
+                    )}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    onClick={() => setSortOption("priority")}
+                    className={`cursor-pointer flex items-center ${
+                      sortOption === "priority" ? "font-bold" : ""
+                    }`}
+                  >
+                    Priority
+                    {sortOption === "priority" && (
+                      <span className="text-green-500 mr-2">✔</span>
+                    )}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    onClick={() => setSortOption("alphabetical")}
+                    className={`cursor-pointer flex items-center ${
+                      sortOption === "alphabetical" ? "font-bold" : ""
+                    }`}
+                  >
+                    Alphabetical
+                    {sortOption === "alphabetical" && (
+                      <span className="text-green-500 mr-2">✔</span>
+                    )}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         {/* Task List */}
@@ -123,14 +182,8 @@ function App() {
         {/* Dynamic Modal */}
         <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
           {modalContent === "add" && (
-            <>
-              <h2 className="text-xl font-bold mb-4 text-zinc-900">
-                Add a new task
-              </h2>
-              <AddTaskForm onSuccess={refetch} onClose={handleCloseModal} />
-            </>
+            <AddTaskForm onSuccess={refetch} onClose={handleCloseModal} />
           )}
-
           {modalContent === "delete" && selectedTask && (
             <>
               <h2 className="text-xl font-bold mb-4 text-zinc-900">
@@ -161,7 +214,6 @@ function App() {
               </div>
             </>
           )}
-
           {modalContent === "update" && selectedTask && (
             <UpdateTaskModal
               isOpen={isModalOpen}

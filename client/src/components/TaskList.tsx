@@ -19,13 +19,9 @@ interface TaskListProps {
 }
 
 export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
-  const sortedTasks = [...tasks].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-
   return (
     <div className="task-list">
-      {sortedTasks.map((task) => (
+      {tasks.map((task) => (
         <div
           key={task._id}
           className="my-4 transform transition-transform duration-200 ease-in-out hover:-translate-y-1"
