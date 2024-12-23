@@ -3,14 +3,14 @@ import {
   create,
   deleteTask,
   getAllTasks,
-  getSimilarTasks,
+  searchTasks,
   updateTask,
 } from "../controllers/taskController.js";
 
 const router = express.Router();
 router.post("/task", create);
 router.get("/tasks", getAllTasks);
-router.get("/get-task", getSimilarTasks);
+router.get("/search", searchTasks);
 router.put("/task/:id", updateTask);
 router.delete("/task/:id", deleteTask);
 

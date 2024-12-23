@@ -77,16 +77,16 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
-export const getSimilarTasks = async (req, res) => {
+export const searchTasks = async (req, res) => {
   try {
-    const { description, status } = req.query;
+    const { description } = req.query;
 
     const searchCriteria = {};
     if (description) {
-      searchCriteria.description = { $regex: description, $options: "i" };
-    }
-    if (status) {
-      searchCriteria.status = status;
+      searchCriteria.description = {
+        $regex: `^${description}`,
+        $options: "i",
+      };
     }
 
     const taskData = await Task.find(searchCriteria);

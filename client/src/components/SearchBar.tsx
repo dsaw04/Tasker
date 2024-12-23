@@ -1,0 +1,26 @@
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+interface SearchBarProps {
+  onSearch: (query: string) => void; // Callback for search
+}
+
+export default function SearchBar({ onSearch }: SearchBarProps) {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearch(e.target.value); // Call the onSearch callback with input value
+  };
+
+  return (
+    <div className="flex justify-center">
+      <label className="input input-bordered items-center rounded-3xl flex gap-2 w-[70%] bg-white text-zinc-900">
+        <input
+          type="text"
+          placeholder="Search"
+          onChange={handleInputChange}
+          className="grow text-zinc-900"
+        />
+        <FontAwesomeIcon icon={faSearch} />
+      </label>
+    </div>
+  );
+}

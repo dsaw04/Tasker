@@ -9,8 +9,10 @@ const toLocalDatetime = (date: Date): string =>
     .slice(0, 16); // Formats as "YYYY-MM-DDTHH:mm"
 
 export const useAddTask = (onSuccess: () => void) => {
+  const current = new Date();
+  current.setMinutes(current.getMinutes() + 1);
   // Set current time in local timezone
-  const now = toLocalDatetime(new Date());
+  const now = toLocalDatetime(current);
 
   const [formData, setFormData] = useState({
     description: "",

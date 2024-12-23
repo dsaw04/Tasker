@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTasks } from "./hooks/useTasks";
+import { useSearchTask } from "./hooks/useSearchTask"; // Hook for real-time search
 import { useDeleteTask } from "./hooks/useDeleteTask";
 import TaskList from "./components/TaskList";
 import Modal from "./components/Modal";
 import AddTaskForm from "./components/AddTaskForm";
 import UpdateTaskModal from "./components/UpdateTaskModal";
+import SearchBar from "./components/SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const { tasks, loading, error, refetch } = useTasks();
+  const { results, searchTasks } = useSearchTask(); // Manage search results
+  const [filteredTasks, setFilteredTasks] = useState(tasks);
 
   // State to manage modal content and visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,6 +67,20 @@ function App() {
     setSelectedTask(null);
   };
 
+  // Handle Search
+  const handleSearch = (query: string) => {
+    if (!query) {
+      setFilteredTasks(tasks); // Reset to all tasks if query is empty
+    } else {
+      searchTasks(query); // Perform search
+    }
+  };
+
+  // Update filtered tasks on search results change
+  useEffect(() => {
+    setFilteredTasks(results.length ? results : tasks);
+  }, [results, tasks]);
+
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
       <div className="w-[85%]">
@@ -75,7 +93,7 @@ function App() {
             sort out your life
           </h2>
         </div>
-
+        <SearchBar onSearch={handleSearch} />
         {/* Add Task Button */}
         <div className="py-8 flex items-center justify-between">
           <h1 className="font-lexend font-semibold text-4xl text-zinc-900">
@@ -95,7 +113,7 @@ function App() {
           {error && <p className="text-red-500">Error: {error}</p>}
           {!loading && !error && (
             <TaskList
-              tasks={tasks}
+              tasks={filteredTasks} // Render filtered tasks
               onDelete={handleOpenDeleteModal}
               onUpdate={handleOpenUpdateModal}
             />
