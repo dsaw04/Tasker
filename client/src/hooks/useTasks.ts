@@ -16,8 +16,9 @@ export const useTasks = () => {
       const response = await axios.get("http://localhost:8000/api/tasks");
       const transformedTasks = response.data.data.map((task: TaskType) => ({
         ...task,
-        date: new Date(task.date),
+        date: new Date(task.date), // Ensure date is a Date object
       }));
+      setTasks(transformedTasks);
 
       console.log("Transformed Tasks:", transformedTasks);
       setTasks(transformedTasks);

@@ -26,17 +26,26 @@ export default function Task({
   onDelete,
   onUpdate,
 }: TaskProps) {
-  const formatDate = (date: Date) => {
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "long",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    };
-    return new Intl.DateTimeFormat("en-UK", options).format(date);
+  const formatDate = (date: Date | string) => {
+    try {
+      const parsedDate = new Date(date); // Ensure `date` is converted to a Date object
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error("Invalid date"); // Throw error if `parsedDate` is invalid
+      }
+      const options: Intl.DateTimeFormatOptions = {
+        weekday: "long",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      };
+      return new Intl.DateTimeFormat("en-UK", options).format(parsedDate);
+    } catch (err) {
+      console.error("Invalid date value:", date, err);
+      return "Invalid Date";
+    }
   };
 
   const capitalizeStatus = (status: string): string => {
@@ -51,7 +60,7 @@ export default function Task({
       className={`task-item w-full flex shadow-xl gap-2 border border-gray-200 rounded-3xl`}
     >
       <div
-        className={`w-[2.5%] ${
+        className={`w-[2%] ${
           status === "to-do"
             ? "bg-red-400"
             : status === "check-in"

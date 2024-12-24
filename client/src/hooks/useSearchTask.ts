@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
+import { TaskType } from "../types/TaskType";
 
 export const useSearchTask = () => {
   const [results, setResults] = useState([]);
@@ -11,7 +12,11 @@ export const useSearchTask = () => {
       const response = await axios.get("http://localhost:8000/api/search", {
         params: { description: query },
       });
-      setResults(response.data.data);
+      const transformedResults = response.data.data.map((task: TaskType) => ({
+        ...task,
+        date: new Date(task.date), // Ensure date is a Date object
+      }));
+      setResults(transformedResults);
     } catch (err) {
       console.error(err);
     } finally {
