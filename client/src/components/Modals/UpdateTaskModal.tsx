@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useUpdateTask } from "../hooks/useUpdateTask";
+import { useUpdateTask } from "../../hooks/useUpdateTask";
 
 interface UpdateTaskModalProps {
   isOpen: boolean;

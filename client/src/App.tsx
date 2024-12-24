@@ -1,21 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTasks } from "./hooks/useTasks";
 import { useSearchTask } from "./hooks/useSearchTask"; // Hook for real-time search
 import { useDeleteTask } from "./hooks/useDeleteTask";
-import TaskList from "./components/TaskList";
-import Modal from "./components/Modal";
-import AddTaskForm from "./components/AddTaskForm";
-import UpdateTaskModal from "./components/UpdateTaskModal";
+import TaskList from "./components/Tasks/TaskList";
+import Modal from "./components/Modals/Modal";
+import AddTaskForm from "./components/Modals/AddTaskForm";
+import UpdateTaskModal from "./components/Modals/UpdateTaskModal";
 import SearchBar from "./components/SearchBar";
-import { sortTasks } from "./utils/sortTasks"; // Import sorting utility
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSortDown } from "@fortawesome/free-solid-svg-icons";
+import { useSortTasks } from "./hooks/useSortTasks";
+import Header from "./components/Header/Header";
+import { useFilteredTasks } from "./hooks/useFilteredTasks";
 
 function App() {
   const { tasks, loading, error, refetch } = useTasks();
-  const { results, searchTasks } = useSearchTask(); // Hook for real-time search
-  const [filteredTasks, setFilteredTasks] = useState(tasks);
-  const [sortOption, setSortOption] = useState("chronological"); // Default sort option
+  const { results, searchTasks, resetResults } = useSearchTask();
+  const [sortOption, setSortOption] = useState("chronological");
+
+  const filteredTasks = useFilteredTasks(tasks, results);
+  const sortedTasks = useSortTasks(filteredTasks, sortOption);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<
@@ -71,22 +73,15 @@ function App() {
   // Handle Search
   const handleSearch = (query: string) => {
     if (!query) {
-      setFilteredTasks(sortTasks(tasks, sortOption)); // Reset to all tasks if query is empty
+      resetResults(); // Clear search results when query is empty
     } else {
       searchTasks(query);
     }
   };
 
-  // Update filtered tasks on search and sort changes
-  useEffect(() => {
-    const tasksToDisplay = results.length ? results : tasks;
-    setFilteredTasks(sortTasks(tasksToDisplay, sortOption));
-  }, [results, tasks, sortOption]);
-
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
       <div className="w-[85%]">
-        {/* Header */}
         <div className="flex items-center flex-col pb-6">
           <h1 className="pt-8 pb-4 font-lexend font-medium text-6xl text-zinc-900">
             tasker
@@ -95,76 +90,14 @@ function App() {
             sort out your life
           </h2>
         </div>
+
         <SearchBar onSearch={handleSearch} />
 
-        {/* Add Task and Sort Dropdown */}
-        <div className="py-8 flex items-center justify-between">
-          <h1 className="font-lexend font-semibold text-4xl text-zinc-900">
-            Upcoming
-          </h1>
-          <div className="flex gap-2 relative">
-            <button
-              onClick={handleOpenAddModal}
-              className="flex justify-center items-center w-10 h-10 rounded-full border hover:bg-gray-200"
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </button>
-
-            <div className="dropdown dropdown-hover dropdown-bottom dropdown-end">
-              <div
-                tabIndex={0}
-                role="button"
-                className="flex justify-center items-center w-10 h-10 rounded-full border hover:bg-gray-200"
-              >
-                <FontAwesomeIcon icon={faSortDown} />
-              </div>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-              >
-                <li>
-                  <a
-                    onClick={() => setSortOption("chronological")}
-                    className={`cursor-pointer flex items-center ${
-                      sortOption === "chronological" ? "font-bold" : ""
-                    }`}
-                  >
-                    Chronological
-                    {sortOption === "chronological" && (
-                      <span className="text-green-500 mr-2">✔</span>
-                    )}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    onClick={() => setSortOption("priority")}
-                    className={`cursor-pointer flex items-center ${
-                      sortOption === "priority" ? "font-bold" : ""
-                    }`}
-                  >
-                    Priority
-                    {sortOption === "priority" && (
-                      <span className="text-green-500 mr-2">✔</span>
-                    )}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    onClick={() => setSortOption("alphabetical")}
-                    className={`cursor-pointer flex items-center ${
-                      sortOption === "alphabetical" ? "font-bold" : ""
-                    }`}
-                  >
-                    Alphabetical
-                    {sortOption === "alphabetical" && (
-                      <span className="text-green-500 mr-2">✔</span>
-                    )}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        <Header
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+          onAddTask={handleOpenAddModal}
+        />
 
         {/* Task List */}
         <div>
@@ -172,7 +105,7 @@ function App() {
           {error && <p className="text-red-500">Error: {error}</p>}
           {!loading && !error && (
             <TaskList
-              tasks={filteredTasks} // Render filtered tasks
+              tasks={sortedTasks} // Render filtered tasks
               onDelete={handleOpenDeleteModal}
               onUpdate={handleOpenUpdateModal}
             />

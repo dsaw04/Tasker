@@ -1,12 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-
-export interface TaskType {
-  _id: string;
-  description: string;
-  date: Date;
-  status: string;
-}
+import { TaskType } from "../types/TaskType";
 
 export const useTasks = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);

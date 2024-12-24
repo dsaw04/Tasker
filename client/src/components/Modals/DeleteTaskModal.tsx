@@ -1,4 +1,4 @@
-import { useDeleteTask } from "../hooks/useDeleteTask";
+import { useDeleteTask } from "../../hooks/useDeleteTask";
 
 interface DeleteTaskModalProps {
   isOpen: boolean;

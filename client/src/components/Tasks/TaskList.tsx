@@ -1,11 +1,6 @@
 import Task from "./Task";
+import { TaskType } from "../../types/TaskType";
 
-interface TaskType {
-  _id: string;
-  description: string;
-  date: Date;
-  status: string;
-}
 
 interface TaskListProps {
   tasks: TaskType[];

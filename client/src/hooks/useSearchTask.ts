@@ -5,7 +5,7 @@ export const useSearchTask = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const searchTasks = useCallback(async (query: unknown) => {
+  const searchTasks = useCallback(async (query: string) => {
     setLoading(true);
     try {
       const response = await axios.get("http://localhost:8000/api/search", {
@@ -19,5 +19,9 @@ export const useSearchTask = () => {
     }
   }, []);
 
-  return { results, searchTasks, loading };
+  const resetResults = useCallback(() => {
+    setResults([]); // Clear the search results
+  }, []);
+
+  return { results, searchTasks, resetResults, loading };
 };
