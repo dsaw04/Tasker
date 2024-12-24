@@ -1,9 +1,4 @@
-export interface TaskType {
-  _id: string;
-  description: string;
-  date: Date;
-  status: string;
-}
+import { TaskType } from "../types/TaskType";
 
 export function sortTasks(tasks: TaskType[], sortOption: string): TaskType[] {
   return [...tasks].sort((a, b) => {

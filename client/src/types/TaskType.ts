@@ -4,5 +4,5 @@ export interface TaskType {
   _id: string;
   description: string;
   date: Date;
-  status: string;
+  status: TaskStatus;
 }

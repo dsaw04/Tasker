@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useTasks } from "./hooks/useTasks";
-import { useSearchTask } from "./hooks/useSearchTask"; // Hook for real-time search
-import { useDeleteTask } from "./hooks/useDeleteTask";
+import { useSearchTask } from "./hooks/useSearchTask";
 import TaskList from "./components/Tasks/TaskList";
 import Modal from "./components/Modals/Modal";
-import AddTaskForm from "./components/Modals/AddTaskForm";
+import AddTaskModal from "./components/Modals/AddTaskModal";
 import UpdateTaskModal from "./components/Modals/UpdateTaskModal";
+import DeleteTaskModal from "./components/Modals/DeleteTaskModal";
 import SearchBar from "./components/SearchBar";
 import { useSortTasks } from "./hooks/useSortTasks";
 import Header from "./components/Header/Header";
 import { useFilteredTasks } from "./hooks/useFilteredTasks";
+import { useModal } from "./hooks/useModal";
+import { TaskStatus } from "./types/TaskType";
 
 function App() {
   const { tasks, loading, error, refetch } = useTasks();
@@ -19,61 +21,12 @@ function App() {
   const filteredTasks = useFilteredTasks(tasks, results);
   const sortedTasks = useSortTasks(filteredTasks, sortOption);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<
-    "add" | "delete" | "update" | null
-  >(null);
+  const { isModalOpen, modalContent, selectedTask, openModal, closeModal } =
+    useModal();
 
-  const [selectedTask, setSelectedTask] = useState<{
-    id: string;
-    description: string;
-    date: string;
-    status: string;
-  } | null>(null);
-
-  const { isDeleting, deleteTask } = useDeleteTask(refetch);
-
-  // Open Add Task Modal
-  const handleOpenAddModal = () => {
-    setModalContent("add");
-    setIsModalOpen(true);
-  };
-
-  // Open Delete Task Modal
-  const handleOpenDeleteModal = (taskId: string, taskDescription: string) => {
-    setSelectedTask({
-      id: taskId,
-      description: taskDescription,
-      date: "",
-      status: "",
-    });
-    setModalContent("delete");
-    setIsModalOpen(true);
-  };
-
-  // Open Update Task Modal
-  const handleOpenUpdateModal = (
-    taskId: string,
-    description: string,
-    date: string,
-    status: string
-  ) => {
-    setSelectedTask({ id: taskId, description, date, status });
-    setModalContent("update");
-    setIsModalOpen(true);
-  };
-
-  // Close Modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
-    setSelectedTask(null);
-  };
-
-  // Handle Search
   const handleSearch = (query: string) => {
     if (!query) {
-      resetResults(); // Clear search results when query is empty
+      resetResults();
     } else {
       searchTasks(query);
     }
@@ -82,6 +35,7 @@ function App() {
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
       <div className="w-[85%]">
+        {/* Header */}
         <div className="flex items-center flex-col pb-6">
           <h1 className="pt-8 pb-4 font-lexend font-medium text-6xl text-zinc-900">
             tasker
@@ -91,12 +45,14 @@ function App() {
           </h2>
         </div>
 
+        {/* Search */}
         <SearchBar onSearch={handleSearch} />
 
+        {/* Header Actions */}
         <Header
           sortOption={sortOption}
           setSortOption={setSortOption}
-          onAddTask={handleOpenAddModal}
+          onAddTask={() => openModal("add")}
         />
 
         {/* Task List */}
@@ -105,59 +61,51 @@ function App() {
           {error && <p className="text-red-500">Error: {error}</p>}
           {!loading && !error && (
             <TaskList
-              tasks={sortedTasks} // Render filtered tasks
-              onDelete={handleOpenDeleteModal}
-              onUpdate={handleOpenUpdateModal}
+              tasks={sortedTasks}
+              onDelete={(id, description) => {
+                openModal("delete", {
+                  _id: id,
+                  description,
+                  date: new Date(),
+                  status: "to-do",
+                });
+              }}
+              onUpdate={(id, description, date: Date, status) => {
+                openModal("update", {
+                  _id: id,
+                  description,
+                  date,
+                  status: status as TaskStatus,
+                });
+              }}
             />
           )}
         </div>
 
-        {/* Dynamic Modal */}
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        {/* Modals */}
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
           {modalContent === "add" && (
-            <AddTaskForm onSuccess={refetch} onClose={handleCloseModal} />
+            <AddTaskModal
+              isOpen={isModalOpen}
+              onSuccess={refetch}
+              onClose={closeModal}
+            />
           )}
           {modalContent === "delete" && selectedTask && (
-            <>
-              <h2 className="text-xl font-bold mb-4 text-zinc-900">
-                Delete Task
-              </h2>
-              <p>
-                This action will permanently delete the task{" "}
-                <strong>'{selectedTask.description}'</strong>. Are you sure?
-              </p>
-              <div className="flex gap-2 justify-end mt-4">
-                <button
-                  onClick={handleCloseModal}
-                  className="border px-4 py-2 rounded hover:bg-gray-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={async () => {
-                    await deleteTask(selectedTask.id);
-                    refetch();
-                    handleCloseModal();
-                  }}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </button>
-              </div>
-            </>
+            <DeleteTaskModal
+              isOpen={isModalOpen}
+              taskId={selectedTask._id}
+              taskName={selectedTask.description}
+              onClose={closeModal}
+              onSuccess={refetch}
+            />
           )}
           {modalContent === "update" && selectedTask && (
             <UpdateTaskModal
               isOpen={isModalOpen}
-              task={{
-                id: selectedTask.id,
-                description: selectedTask.description,
-                date: selectedTask.date,
-                status: selectedTask.status,
-              }}
+              task={selectedTask}
+              onClose={closeModal}
               onSuccess={refetch}
-              onClose={handleCloseModal}
             />
           )}
         </Modal>

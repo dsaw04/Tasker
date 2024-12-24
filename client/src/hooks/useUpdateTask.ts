@@ -1,13 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { TaskStatus } from "../types/TaskType";
 
 export const useUpdateTask = (onSuccess: () => void) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updateTask = async (
     taskId: string,
-    updatedData: { description: string; date: string; status: string }
+    updatedData: { description: string; date: Date; status: TaskStatus }
   ) => {
     setIsUpdating(true);
     try {

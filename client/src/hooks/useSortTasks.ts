@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { TaskType, sortTasks } from "../utils/sortTasks";
+import { sortTasks } from "../utils/sortTasks";
+import { TaskType } from "../types/TaskType";
 
 export const useSortTasks = (
   tasks: TaskType[],

@@ -2,18 +2,19 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { TaskStatus } from "../../types/TaskType";
 
 interface TaskProps {
   taskId: string;
   title: string;
-  date: Date;
-  status: string;
+  date: Date; // Ensure date is always a Date object
+  status: TaskStatus;
   onDelete: (taskId: string, taskName: string) => void;
   onUpdate: (
     taskId: string,
     taskName: string,
-    taskDate: string,
-    taskStatus: string
+    taskDate: Date, // Use Date type here
+    taskStatus: TaskStatus
   ) => void;
 }
 
@@ -41,13 +42,11 @@ export default function Task({
   return (
     <div className="task-item w-full p-4 shadow-xl justify-between gap-2 flex border border-gray-200 rounded-3xl">
       <div>
-        <h3 className="font-lexend font-medium text-xl text-zinc-900">
-          {title}
-        </h3>
-        <p className="text-gray-600">{formatDate(new Date(date))}</p>
+        <h3 className="font-lexend font-medium text-xl text-zinc-900">{title}</h3>
+        <p className="text-gray-600">{formatDate(date)}</p>
         <p
           className={`status ${
-            status === "To-do" ? "text-red-500" : "text-green-500"
+            status === "to-do" ? "text-red-500" : "text-green-500"
           }`}
         >
           {status}
@@ -55,7 +54,7 @@ export default function Task({
       </div>
       <div className="flex self-center justify-self-end gap-2">
         <button
-          onClick={() => onUpdate(taskId, title, date.toISOString(), status)}
+          onClick={() => onUpdate(taskId, title, date, status)}
           className="transition-transform duration-100 ease-in-out transform hover:scale-105"
         >
           <FontAwesomeIcon
@@ -76,3 +75,4 @@ export default function Task({
     </div>
   );
 }
+

@@ -8,7 +8,7 @@ interface TaskListProps {
   onUpdate: (
     taskId: string,
     taskName: string,
-    taskDate: string,
+    taskDate: Date,
     taskStatus: string
   ) => void;
 }
