@@ -39,40 +39,65 @@ export default function Task({
     return new Intl.DateTimeFormat("en-UK", options).format(date);
   };
 
+  const capitalizeStatus = (status: string): string => {
+    return status
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join("-");
+  };
+
   return (
-    <div className="task-item w-full p-4 shadow-xl justify-between gap-2 flex border border-gray-200 rounded-3xl">
-      <div>
-        <h3 className="font-lexend font-medium text-xl text-zinc-900">{title}</h3>
-        <p className="text-gray-600">{formatDate(date)}</p>
-        <p
-          className={`status ${
-            status === "to-do" ? "text-red-500" : "text-green-500"
-          }`}
-        >
-          {status}
-        </p>
-      </div>
-      <div className="flex self-center justify-self-end gap-2">
-        <button
-          onClick={() => onUpdate(taskId, title, date, status)}
-          className="transition-transform duration-100 ease-in-out transform hover:scale-105"
-        >
-          <FontAwesomeIcon
-            icon={faPenToSquare}
-            className="p-2 border rounded-lg hover:border-2"
-          />
-        </button>
-        <button
-          onClick={() => onDelete(taskId, title)}
-          className="transition-transform duration-100 ease-in-out transform hover:scale-105"
-        >
-          <FontAwesomeIcon
-            icon={faTrashCan}
-            className="p-2 border rounded-lg hover:border-2 text-red-500"
-          />
-        </button>
+    <div
+      className={`task-item w-full flex shadow-xl gap-2 border border-gray-200 rounded-3xl`}
+    >
+      <div
+        className={`w-[2.5%] ${
+          status === "to-do"
+            ? "bg-red-400"
+            : status === "check-in"
+            ? "bg-yellow-400"
+            : "bg-green-400"
+        } rounded-l-3xl`}
+      ></div>
+      <div className="justify-between pl-2 p-4 flex w-full">
+        <div>
+          <h3 className="font-lexend font-medium text-xl text-zinc-900">
+            {title}
+          </h3>
+          <p className="text-gray-600">{formatDate(date)}</p>
+          <p
+            className={`status ${
+              status === "to-do"
+                ? "text-red-500"
+                : status === "check-in"
+                ? "text-yellow-500"
+                : "text-green-500"
+            }`}
+          >
+            {capitalizeStatus(status)}
+          </p>
+        </div>
+        <div className="flex self-center justify-self-end gap-2">
+          <button
+            onClick={() => onUpdate(taskId, title, date, status)}
+            className="transition-transform duration-100 ease-in-out transform hover:scale-105"
+          >
+            <FontAwesomeIcon
+              icon={faPenToSquare}
+              className="p-2 border rounded-lg hover:border-2"
+            />
+          </button>
+          <button
+            onClick={() => onDelete(taskId, title)}
+            className="transition-transform duration-100 ease-in-out transform hover:scale-105"
+          >
+            <FontAwesomeIcon
+              icon={faTrashCan}
+              className="p-2 border rounded-lg hover:border-2 text-red-500"
+            />
+          </button>
+        </div>
       </div>
     </div>
   );
 }
-
