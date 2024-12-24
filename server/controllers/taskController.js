@@ -117,7 +117,47 @@ export const updateTask = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const updatedTask = await Task.findByIdAndUpdate(id, updates, {
+    // Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid task ID.",
+      });
+    }
+
+    // Validate updates
+    if (!updates || Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No updates provided.",
+      });
+    }
+
+    if (updates.date && isNaN(Date.parse(updates.date))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid date format.",
+      });
+    }
+
+    if (
+      updates.status &&
+      !["to-do", "check-in", "done"].includes(updates.status)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value.",
+      });
+    }
+
+    // Preprocess updates
+    const sanitizedUpdates = {};
+    if (updates.description)
+      sanitizedUpdates.description = updates.description.trim();
+    if (updates.date) sanitizedUpdates.date = new Date(updates.date);
+    if (updates.status) sanitizedUpdates.status = updates.status;
+
+    const updatedTask = await Task.findByIdAndUpdate(id, sanitizedUpdates, {
       new: true,
     });
 

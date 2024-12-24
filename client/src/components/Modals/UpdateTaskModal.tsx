@@ -1,7 +1,7 @@
 import Modal from "./Modal";
-import { useState, useEffect } from "react";
 import { useUpdateTask } from "../../hooks/useUpdateTask";
-import { TaskType, TaskStatus } from "../../types/TaskType";
+import { TaskType } from "../../types/TaskType";
+import getMinDateTime from "../../utils/getMinDateTime";
 
 interface UpdateTaskModalProps {
   isOpen: boolean;
@@ -16,48 +16,18 @@ export default function UpdateTaskModal({
   onClose,
   onSuccess,
 }: UpdateTaskModalProps) {
-  const { isUpdating, updateTask } = useUpdateTask(onSuccess);
+  const { formData, isSubmitting, handleChange, handleSubmit, resetForm } =
+    useUpdateTask(task, onSuccess);
 
-  const [formData, setFormData] = useState({
-    description: "",
-    date: new Date(),
-    status: "to-do" as TaskStatus,
-  });
-
-  // Populate form data when modal opens
-  useEffect(() => {
-    if (task) {
-      const localDate = new Date(
-        task.date.getTime() - task.date.getTimezoneOffset() * 60000
-      ); // Adjust for local timezone
-      setFormData({
-        description: task.description,
-        date: localDate, // Keep as a Date object
-        status: task.status,
-      });
-    }
-  }, [task]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "date" ? new Date(value) : value, // Convert date to a Date object
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await updateTask(task._id, formData); // `formData` now matches the expected types
+  const handleClose = () => {
+    resetForm(); // Reset form state on close
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <h2 className="text-xl font-bold mb-4 text-zinc-900">Update Task</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <label>
           <span className="label-text text-zinc-900 font-semibold">
             Task Description
@@ -67,9 +37,10 @@ export default function UpdateTaskModal({
             name="description"
             value={formData.description}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
+            className="border w-full p-2 rounded"
           />
         </label>
+
         <label>
           <span className="label-text text-zinc-900 font-semibold">
             Date and Time
@@ -77,13 +48,14 @@ export default function UpdateTaskModal({
           <input
             type="datetime-local"
             name="date"
-            value={formData.date.toISOString().slice(0, 16)} // Convert Date object to string for input
+            value={formData.date}
             onChange={handleChange}
-            min={new Date().toISOString().slice(0, 16)} // Always ensure UTC min value
             className="border p-2 rounded w-full"
+            min={getMinDateTime()} // Prevent setting date/time in the past
           />
         </label>
-        <label>
+
+        <label className="pb-6">
           <span className="label-text text-zinc-900 font-semibold">Status</span>
           <select
             name="status"
@@ -99,7 +71,7 @@ export default function UpdateTaskModal({
         <div className="flex gap-2 justify-end">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="border px-4 py-2 rounded hover:bg-gray-200"
           >
             Cancel
@@ -107,9 +79,9 @@ export default function UpdateTaskModal({
           <button
             type="submit"
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            disabled={isUpdating}
+            disabled={isSubmitting}
           >
-            {isUpdating ? "Updating..." : "Update Task"}
+            {isSubmitting ? "Updating..." : "Update Task"}
           </button>
         </div>
       </form>
