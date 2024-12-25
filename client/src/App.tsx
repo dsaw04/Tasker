@@ -60,7 +60,7 @@ function App() {
         <div>
           {loading && <p>Loading tasks...</p>}
           {error && <ErrorController code={error} />}
-          {searchError && <ErrorController code={searchError} />}
+          {searchError && !error && <ErrorController code={searchError} />}
           {!loading && !error && !searchError && (
             <TaskList
               tasks={sortedTasks}
