@@ -54,12 +54,13 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
     try {
       await axios.put(`http://localhost:8000/api/task/${task._id}`, {
         ...formData,
-        date: new Date(formData.date), // Convert back to Date object
+        date: new Date(formData.date), 
       });
       toast.success("Task updated successfully!");
       onSuccess(); // Trigger a refetch
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        console.log(error);
         toast.error(error.response?.data.message || "Failed to update task.");
       } else {
         toast.error("An unexpected error occurred.");

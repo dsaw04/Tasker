@@ -17,7 +17,10 @@ export default function UpdateTaskModal({
   onSuccess,
 }: UpdateTaskModalProps) {
   const { formData, isSubmitting, handleChange, handleSubmit, resetForm } =
-    useUpdateTask(task, onSuccess);
+    useUpdateTask(task, () => {
+      onSuccess(); // Refresh the task list
+      handleClose(); // Close the modal when update is successful
+    });
 
   const handleClose = () => {
     resetForm(); // Reset form state on close

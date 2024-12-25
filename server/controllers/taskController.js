@@ -1,4 +1,5 @@
 import Task from "../models/taskModel.js";
+import mongoose from "mongoose";
 
 /**
  * Checks whether a date is either today or in the future.
@@ -174,6 +175,7 @@ export const updateTask = async (req, res) => {
       data: updatedTask,
     });
   } catch (err) {
+    console.error("Error updating task:", err.message);
     res.status(500).json({
       success: false,
       message: "Server error occurred.",
