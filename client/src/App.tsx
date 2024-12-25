@@ -35,7 +35,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
-      <div className="w-[85%]">
+      <div className="w-[85%] max-w-4xl">
         {/* Header */}
         <div className="flex items-center flex-col pb-6">
           <h1 className="pt-8 pb-4 font-lexend font-medium text-6xl text-zinc-900">
