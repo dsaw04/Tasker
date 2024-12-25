@@ -12,10 +12,11 @@ import Header from "./components/Header/Header";
 import { useFilteredTasks } from "./hooks/useFilteredTasks";
 import { useModal } from "./hooks/useModal";
 import { TaskStatus } from "./types/TaskType";
+import ErrorController from "./components/ErrorController";
 
 function App() {
   const { tasks, loading, error, refetch } = useTasks();
-  const { results, searchTasks, resetResults } = useSearchTask();
+  const { results, searchTasks, resetResults, searchError } = useSearchTask();
   const [sortOption, setSortOption] = useState("chronological");
 
   const filteredTasks = useFilteredTasks(tasks, results);
@@ -58,8 +59,9 @@ function App() {
         {/* Task List */}
         <div>
           {loading && <p>Loading tasks...</p>}
-          {error && <p className="text-red-500">Error: {error}</p>}
-          {!loading && !error && (
+          {error && <ErrorController code={error} />}
+          {searchError && <ErrorController code={searchError} />}
+          {!loading && !error && !searchError && (
             <TaskList
               tasks={sortedTasks}
               onDelete={(id, description) => {

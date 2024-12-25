@@ -5,35 +5,34 @@ import { TaskType } from "../types/TaskType";
 export const useTasks = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<number | null>(null);
 
-  // Fetch tasks function (reusable)
   const fetchTasks = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
       const response = await axios.get("http://localhost:8000/api/tasks");
+
+      if (response.status === 204 || !response.data?.data?.length) {
+        setTasks([]);
+        setError(204);
+        return;
+      }
+
       const transformedTasks = response.data.data.map((task: TaskType) => ({
         ...task,
-        date: new Date(task.date), // Ensure date is a Date object
+        date: new Date(task.date),
       }));
-      setTasks(transformedTasks);
 
-      console.log("Transformed Tasks:", transformedTasks);
       setTasks(transformedTasks);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.message);
-      } else {
-        setError("An unexpected error occurred");
-      }
+      setError(axios.isAxiosError(err) ? err.response?.status || 500 : 500);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Fetch tasks on component mount
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);

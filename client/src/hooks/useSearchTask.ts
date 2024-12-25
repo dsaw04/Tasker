@@ -5,6 +5,7 @@ import { TaskType } from "../types/TaskType";
 export const useSearchTask = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState<number | null>(null);
 
   const searchTasks = useCallback(async (query: string) => {
     setLoading(true);
@@ -17,8 +18,14 @@ export const useSearchTask = () => {
         date: new Date(task.date), // Ensure date is a Date object
       }));
       setResults(transformedResults);
+      setSearchError(null); // Clear any previous error if the search is successful
     } catch (err) {
       console.error(err);
+      if (axios.isAxiosError(err)) {
+        setSearchError(err.response ? err.response.status : 500);
+      } else {
+        setSearchError(500);
+      }
     } finally {
       setLoading(false);
     }
@@ -26,7 +33,8 @@ export const useSearchTask = () => {
 
   const resetResults = useCallback(() => {
     setResults([]); // Clear the search results
+    setSearchError(null); // Clear the error when resetting
   }, []);
 
-  return { results, searchTasks, resetResults, loading };
+  return { results, searchTasks, searchError, resetResults, loading };
 };

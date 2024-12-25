@@ -57,7 +57,7 @@ export const getAllTasks = async (req, res) => {
     const tasks = await Task.find();
 
     if (!tasks.length) {
-      return res.status(404).json({
+      return res.status(204).json({
         success: false,
         message: "No tasks found.",
       });
