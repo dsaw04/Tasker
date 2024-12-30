@@ -16,6 +16,11 @@ const taskSchema = new mongoose.Schema(
       enum: ["to-do", "check-in", "done"],
       default: "to-do",
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Reference to the User model
+      required: true,
+    },
   },
   {
     timestamps: true,

@@ -1,7 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import route from "./routes/taskRoutes.js";
+import taskRoute from "./routes/taskRoutes.js";
+import userRoute from "./routes/userRoutes.js";
 import cors from "cors";
 
 dotenv.config();
@@ -34,4 +35,5 @@ mongoose
   });
 
 // Routes
-app.use("/api", route); // Mount routes
+app.use("/api", taskRoute);
+app.use("/api/users", userRoute);

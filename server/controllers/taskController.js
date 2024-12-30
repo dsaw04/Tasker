@@ -28,7 +28,11 @@ export const create = async (req, res) => {
       });
     }
 
-    const taskExist = await Task.findOne({ description });
+    // Avoid global duplicate task check; scope it to the user
+    const taskExist = await Task.findOne({
+      description,
+      user: req.user, // Match description within the user's tasks
+    });
     if (taskExist) {
       return res.status(400).json({
         success: false,
@@ -36,7 +40,12 @@ export const create = async (req, res) => {
       });
     }
 
-    const newTask = new Task({ description, date, status });
+    const newTask = new Task({
+      description,
+      date,
+      status,
+      user: req.user, // Assign the user's ObjectId
+    });
     const savedTask = await newTask.save();
 
     res.status(201).json({
@@ -45,6 +54,7 @@ export const create = async (req, res) => {
       data: savedTask,
     });
   } catch (err) {
+    console.error("Error creating task:", err.message);
     res.status(500).json({
       success: false,
       message: "Server error occurred.",
@@ -55,12 +65,21 @@ export const create = async (req, res) => {
 
 export const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
+    // Debugging: Check req.user
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access.",
+      });
+    }
+
+    const tasks = await Task.find({ user: req.user });
 
     if (!tasks.length) {
-      return res.status(204).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "No tasks found.",
+        data: [], // Return an empty array for no tasks
       });
     }
 
@@ -70,6 +89,7 @@ export const getAllTasks = async (req, res) => {
       data: tasks,
     });
   } catch (err) {
+    console.error("Error fetching tasks:", err.message);
     res.status(500).json({
       success: false,
       message: "Server error occurred.",
@@ -82,7 +102,7 @@ export const searchTasks = async (req, res) => {
   try {
     const { description } = req.query;
 
-    const searchCriteria = {};
+    const searchCriteria = { user: req.user.id };
     if (description) {
       searchCriteria.description = {
         $regex: `^${description}`,
@@ -118,7 +138,6 @@ export const updateTask = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    // Validate ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -126,48 +145,17 @@ export const updateTask = async (req, res) => {
       });
     }
 
-    // Validate updates
-    if (!updates || Object.keys(updates).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "No updates provided.",
-      });
-    }
+    const task = await Task.findOne({ _id: id, user: req.user });
 
-    if (updates.date && isNaN(Date.parse(updates.date))) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid date format.",
-      });
-    }
-
-    if (
-      updates.status &&
-      !["to-do", "check-in", "done"].includes(updates.status)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid status value.",
-      });
-    }
-
-    // Preprocess updates
-    const sanitizedUpdates = {};
-    if (updates.description)
-      sanitizedUpdates.description = updates.description.trim();
-    if (updates.date) sanitizedUpdates.date = new Date(updates.date);
-    if (updates.status) sanitizedUpdates.status = updates.status;
-
-    const updatedTask = await Task.findByIdAndUpdate(id, sanitizedUpdates, {
-      new: true,
-    });
-
-    if (!updatedTask) {
+    if (!task) {
       return res.status(404).json({
         success: false,
-        message: "Task not found.",
+        message: "Task not found or unauthorized access.",
       });
     }
+
+    Object.assign(task, updates);
+    const updatedTask = await task.save();
 
     res.status(200).json({
       success: true,
@@ -188,12 +176,19 @@ export const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const task = await Task.findByIdAndDelete(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid task ID.",
+      });
+    }
+
+    const task = await Task.findOneAndDelete({ _id: id, user: req.user });
 
     if (!task) {
       return res.status(404).json({
         success: false,
-        message: "Task not found.",
+        message: "Task not found or unauthorized access.",
       });
     }
 
@@ -203,6 +198,7 @@ export const deleteTask = async (req, res) => {
       data: task,
     });
   } catch (err) {
+    console.error("Error deleting task:", err.message);
     res.status(500).json({
       success: false,
       message: "Server error occurred.",

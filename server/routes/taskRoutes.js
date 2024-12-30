@@ -6,12 +6,14 @@ import {
   searchTasks,
   updateTask,
 } from "../controllers/taskController.js";
+import { authenticateToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
-router.post("/task", create);
-router.get("/tasks", getAllTasks);
-router.get("/search", searchTasks);
-router.put("/task/:id", updateTask);
-router.delete("/task/:id", deleteTask);
+
+router.post("/task", authenticateToken, create);
+router.get("/tasks", authenticateToken, getAllTasks);
+router.get("/search", authenticateToken, searchTasks);
+router.put("/task/:id", authenticateToken, updateTask);
+router.delete("/task/:id", authenticateToken, deleteTask);
 
 export default router;
