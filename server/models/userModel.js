@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+  refreshToken: {
+    type: String,
+    default: null, // Store the refresh token
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -44,4 +48,4 @@ userSchema.pre("save", async function (next) {
 });
 
 const User = mongoose.model("User", userSchema);
-export default User; 
+export default User;
