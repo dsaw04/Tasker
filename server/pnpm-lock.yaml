@@ -1380,6 +1380,7 @@ snapshots:
       cors: 2.8.5
       dotenv: 16.4.7
       express: 4.21.2
+      jsonwebtoken: 9.0.2
       mongoose: 8.8.4
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
