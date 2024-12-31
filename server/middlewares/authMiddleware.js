@@ -2,17 +2,21 @@ import jwt from "jsonwebtoken";
 
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1]; // Extract token
 
-  if (!authHeader) {
-    return res.status(401).json({ error: "Access Denied" });
+  if (!token) {
+    return res.status(401).json({ error: "Access Denied: Token missing" });
   }
 
-  const token = authHeader.split(" ")[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.userId; // Attach only the userId
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token
+    req.user = decoded.id; // Attach user ID to request
     next();
   } catch (error) {
-    res.status(403).json({ error: "Invalid Token" });
+    console.error("Token verification error:", error.message);
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Access token expired" });
+    }
+    return res.status(403).json({ error: "Invalid token" });
   }
 };

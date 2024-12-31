@@ -102,20 +102,25 @@ export const searchTasks = async (req, res) => {
   try {
     const { description } = req.query;
 
+    // Debugging: Log the query and user ID
+    console.log("Search Query:", description);
+    console.log("User ID:", req.user.id);
+
     const searchCriteria = { user: req.user.id };
     if (description) {
       searchCriteria.description = {
-        $regex: `^${description}`,
-        $options: "i",
+        $regex: `^${description}`, // Match only descriptions starting with the query
+        $options: "i", // Case-insensitive search
       };
     }
 
     const taskData = await Task.find(searchCriteria);
 
     if (!taskData.length) {
-      return res.status(404).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "No tasks match the criteria.",
+        data: [], // Return an empty array instead of 404
       });
     }
 
@@ -125,6 +130,7 @@ export const searchTasks = async (req, res) => {
       data: taskData,
     });
   } catch (err) {
+    console.error("Error in searchTasks:", err.message);
     res.status(500).json({
       success: false,
       message: "Server error occurred.",
@@ -132,6 +138,7 @@ export const searchTasks = async (req, res) => {
     });
   }
 };
+
 
 export const updateTask = async (req, res) => {
   try {

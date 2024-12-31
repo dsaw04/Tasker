@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import taskRoute from "./routes/taskRoutes.js";
 import userRoute from "./routes/userRoutes.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(cookieParser());
 
 // Environment Variables
 const PORT = process.env.PORT || 7000;

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import apiClient from "../api/apiClient";
 
 export const useDeleteTask = (onSuccess: () => void) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -8,7 +9,7 @@ export const useDeleteTask = (onSuccess: () => void) => {
   const deleteTask = async (taskId: string) => {
     setIsDeleting(true);
     try {
-      await axios.delete(`http://localhost:8000/api/task/${taskId}`);
+      await apiClient.delete(`/task/${taskId}`);
       toast.success("Task deleted successfully!");
       onSuccess(); // Trigger a refetch or parent success action
     } catch (error) {

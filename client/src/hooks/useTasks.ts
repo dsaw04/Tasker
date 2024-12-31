@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { TaskType } from "../types/TaskType";
+import apiClient from "../api/apiClient";
 
 export const useTasks = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
@@ -12,7 +13,7 @@ export const useTasks = () => {
     setError(null);
 
     try {
-      const response = await axios.get("http://localhost:8000/api/tasks");
+      const response = await apiClient.get("/tasks");
 
       if (response.status === 204 || !response.data?.data?.length) {
         setTasks([]);

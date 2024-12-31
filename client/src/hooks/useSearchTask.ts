@@ -1,26 +1,34 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 import { TaskType } from "../types/TaskType";
+import apiClient from "../api/apiClient";
 
 export const useSearchTask = () => {
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<TaskType[]>([]); // Specify TaskType for results
   const [loading, setLoading] = useState(false);
   const [searchError, setSearchError] = useState<number | null>(null);
 
   const searchTasks = useCallback(async (query: string) => {
     setLoading(true);
+    setSearchError(null); // Clear any previous errors
+
     try {
-      const response = await axios.get("http://localhost:8000/api/search", {
+      const response = await apiClient.get("/search", {
         params: { description: query },
       });
-      const transformedResults = response.data.data.map((task: TaskType) => ({
+
+      const { data } = response.data;
+      console.log("Search results:", data); // Debugging log
+
+      // Transform tasks if data exists
+      const transformedResults = data.map((task: TaskType) => ({
         ...task,
-        date: new Date(task.date), // Ensure date is a Date object
+        date: new Date(task.date), // Ensure the date is a Date object
       }));
+
       setResults(transformedResults);
-      setSearchError(null); // Clear any previous error if the search is successful
     } catch (err) {
-      console.error(err);
+      console.error("Error during search:", err);
       if (axios.isAxiosError(err)) {
         setSearchError(err.response ? err.response.status : 500);
       } else {

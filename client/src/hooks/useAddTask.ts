@@ -1,24 +1,22 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "react-hot-toast";
-
-// Utility to normalize datetime to local timezone
-const toLocalDatetime = (date: Date): string =>
-  new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 16); // Formats as "YYYY-MM-DDTHH:mm"
+import apiClient from "../api/apiClient";
+import { handleApiError } from "../utils/errorHandler";
+import { toLocalDatetime } from "../utils/toLocatDateTime";
 
 export const useAddTask = (onSuccess: () => void) => {
-  const current = new Date();
-  current.setMinutes(current.getMinutes() + 1);
-  // Set current time in local timezone
-  const now = toLocalDatetime(current);
+  const getDefaultDate = () => {
+    const current = new Date();
+    current.setMinutes(current.getMinutes() + 1); // Add 1 minute to avoid past time
+    return toLocalDatetime(current); // Convert to local datetime format
+  };
 
   const [formData, setFormData] = useState({
     description: "",
-    date: now, // Use local timezone
+    date: getDefaultDate(), // Default to current local datetime
     status: "to-do",
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
@@ -29,7 +27,11 @@ export const useAddTask = (onSuccess: () => void) => {
   };
 
   const resetForm = () => {
-    setFormData({ description: "", date: now, status: "to-do" }); // Reset form with local time
+    setFormData({
+      description: "",
+      date: getDefaultDate(), // Reset with updated current date
+      status: "to-do",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,16 +39,12 @@ export const useAddTask = (onSuccess: () => void) => {
     setIsSubmitting(true);
 
     try {
-      await axios.post("http://localhost:8000/api/task", formData);
+      await apiClient.post("/task", formData); // Use `apiClient`
       toast.success("Task added successfully!");
       resetForm();
-      onSuccess(); // Trigger refetch
+      onSuccess(); // Trigger parent success callback (e.g., refetch tasks)
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data.message || "Failed to add task.");
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      toast.error(handleApiError(error)); // Handle backend error messages
     } finally {
       setIsSubmitting(false);
     }

@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { TaskType } from "../types/TaskType";
 import { TaskStatus } from "../types/TaskType";
+import apiClient from "../api/apiClient";
 
 // Utility to normalize datetime to local timezone
 const toLocalDatetime = (date: Date): string =>
@@ -52,9 +53,9 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
     setIsSubmitting(true);
 
     try {
-      await axios.put(`http://localhost:8000/api/task/${task._id}`, {
+      await apiClient.put(`/task/${task._id}`, {
         ...formData,
-        date: new Date(formData.date), 
+        date: new Date(formData.date),
       });
       toast.success("Task updated successfully!");
       onSuccess(); // Trigger a refetch
