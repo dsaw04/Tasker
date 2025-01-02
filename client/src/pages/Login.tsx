@@ -1,6 +1,8 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { TextField } from "@mui/material";
+import { Img } from "react-image";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -19,36 +21,57 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 p-6">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-          Welcome Back
-        </h1>
-        <p className="text-gray-600 text-center mb-6">
-          Log in to access your tasks
-        </p>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          />
-          <button
-            type="submit"
-            className="w-full py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
-          >
-            Login
-          </button>
-        </form>
+    <div className="flex w-screen h-screen">
+      {/* Left Side */}
+      <div className="w-[45%] flex items-center justify-center">
+        <div className="w-[65%] gap-2 flex flex-col">
+          <h1 className="text-4xl font-serif text-zinc-900 mb-4">
+            Welcome back
+          </h1>
+          <p className="text-zinc-600 font-serif mb-6">
+            Log in to access your tasks
+          </p>
+          <form onSubmit={handleLogin} className="">
+            <div className="space-y-4">
+              {/* Material UI Input for Username */}
+              <TextField
+                fullWidth
+                label="Username"
+                variant="outlined"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+
+              {/* Material UI Input for Password */}
+              <TextField
+                fullWidth
+                label="Password"
+                type="password"
+                variant="outlined"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            <div className="mt-16">
+              <button
+                type="submit"
+                className="w-full py-2 bg-olive text-white rounded-lg hover:bg-forestGreen transition duration-200"
+              >
+                Login
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Right Side */}
+      <div className="w-[55%]">
+        <Img
+          src="assets/forest.webp"
+          className="object-cover object-center w-full h-full"
+          alt="forest"
+        />
       </div>
     </div>
   );
