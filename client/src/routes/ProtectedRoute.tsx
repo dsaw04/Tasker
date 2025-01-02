@@ -8,7 +8,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   const { isAuthenticated, loading } = useContext(AuthContext);
 
   if (loading) {
-    return <div>Loading...</div>; // Add a loader while checking auth
+    return <div>Loading...</div>;
   }
 
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;

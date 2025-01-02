@@ -7,6 +7,11 @@ export interface AuthContextType {
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  register: (
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
   getAccessToken: () => string | null;
 }
 
@@ -15,6 +20,7 @@ export const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => {},
   logout: async () => {},
+  register: async () => {},
   getAccessToken: () => null,
 });
 
@@ -42,8 +48,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         updateAccessToken(response.data.accessToken);
         setIsAuthenticated(true);
       } catch (error) {
-        console.error("Failed to refresh token:", error);
-        updateAccessToken(null);
+        console.error("Failed to authenticate:", error);
         setIsAuthenticated(false);
       } finally {
         setLoading(false);
@@ -68,6 +73,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const register = async (
+    username: string,
+    email: string,
+    password: string
+  ) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/users/register",
+        { username, email, password },
+        { withCredentials: true }
+      );
+      updateAccessToken(response.data.accessToken);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await apiClient.delete("/users/logout", { withCredentials: true });
@@ -87,6 +111,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         loading,
         login,
         logout,
+        register, // Expose register function
         getAccessToken,
       }}
     >
