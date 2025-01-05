@@ -6,6 +6,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
+  loginAsGuest: () => Promise<void>; // Add this method
   logout: () => Promise<void>;
   register: (
     username: string,
@@ -26,6 +27,7 @@ export const AuthContext = createContext<AuthContextType>({
   verifyEmail: async () => "",
   getAccessToken: () => null,
   resendVerificationEmail: async () => {},
+  loginAsGuest: async () => {},
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
@@ -80,7 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const verifyEmail = async (code: string): Promise<string> => {
     try {
       const response = await apiClient.post("/users/verify", { code });
-      
+
       if (response.status !== 200) {
         throw new Error(
           response.data?.message || "Unexpected response from the server."
@@ -150,6 +152,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const loginAsGuest = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/users/guest",
+        {},
+        { withCredentials: true }
+      );
+      updateAccessToken(response.data.token);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Guest login failed:", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await apiClient.delete("/users/logout", { withCredentials: true });
@@ -173,6 +190,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         verifyEmail,
         resendVerificationEmail,
         getAccessToken,
+        loginAsGuest,
       }}
     >
       {children}

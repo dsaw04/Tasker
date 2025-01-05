@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { sendVerificationEmail } from "../sendgrid/sendgrid.config.js";
+import crypto from "crypto";
 
 const generateAccessToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "15m" });
@@ -249,6 +250,48 @@ export const logoutUser = async (req, res) => {
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.error("Error during logout:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const createGuest = async (req, res) => {
+  try {
+    const randomSequence = crypto.randomBytes(4).toString("hex");
+    const guestUsername = `Guest_${randomSequence}`;
+
+    const uniqueGuestEmail = `guest_${Date.now()}@example.com`;
+
+    // Create a new guest user
+    const guestUser = new User({
+      username: guestUsername,
+      email: uniqueGuestEmail,
+      role: "guest",
+      guestTaskLimit: 5,
+      guestEditLimit: 10,
+    });
+
+    await guestUser.save();
+
+    // Generate a token for the guest user (if authentication is needed)
+    const token = generateAccessToken(guestUser._id);
+
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.status(201).json({
+      message: "Guest user created successfully",
+      token,
+      user: {
+        id: guestUser._id,
+        username: guestUser.username,
+        role: guestUser.role,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating guest user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -10,18 +10,22 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: function () {
+      return this.role !== "guest"; // Email is required only for non-guest users
+    },
     unique: true,
     lowercase: true,
     match: [/.+@.+\..+/, "Please enter a valid email address"],
   },
   password: {
     type: String,
-    required: true,
+    required: function () {
+      return this.role !== "guest"; // Password is required only for non-guest users
+    },
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin", "guest"],
     default: "user",
   },
   refreshToken: {
@@ -48,11 +52,17 @@ const userSchema = new mongoose.Schema({
   verificationTokenExpires: {
     type: Date,
   },
+  guestTaskLimit: {
+    type: Number,
+  },
+  guestEditLimit: {
+    type: Number,
+  },
 });
 
 // Pre-save hook to hash password
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  if (!this.isModified("password") || this.role === "guest") return next(); // Skip password hashing for guests
 
   try {
     const salt = await bcrypt.genSalt(10);

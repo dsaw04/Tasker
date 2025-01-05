@@ -9,7 +9,7 @@ import { AxiosError } from "axios";
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext);
+  const { login, loginAsGuest } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -34,6 +34,20 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleGuestLogin = async () => {
+    try {
+      await loginAsGuest();
+      navigate("/");
+      toast.success("Logged in as a guest!");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Failed to log in as a guest. Please try again.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
+  };
+
   return (
     <div className="flex w-screen h-screen">
       {/* Left Side */}
@@ -45,9 +59,8 @@ const Login: React.FC = () => {
           <p className="text-zinc-600 font-serif mb-6">
             Log in to access your tasks
           </p>
-          <form onSubmit={handleLogin} className="">
+          <form onSubmit={handleLogin}>
             <div className="space-y-4">
-              {/* Material UI Input for Username */}
               <TextField
                 fullWidth
                 label="Username"
@@ -55,8 +68,6 @@ const Login: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
-
-              {/* Material UI Input for Password */}
               <TextField
                 fullWidth
                 label="Password"
@@ -66,7 +77,6 @@ const Login: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-
             <div className="mt-16">
               <button
                 type="submit"
@@ -76,6 +86,14 @@ const Login: React.FC = () => {
               </button>
             </div>
           </form>
+
+          {/* Add Guest Login Button */}
+          <button
+            onClick={handleGuestLogin}
+            className="mt-4 w-full py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-600 transition duration-200"
+          >
+            Continue as Guest
+          </button>
         </div>
       </div>
 

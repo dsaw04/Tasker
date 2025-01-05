@@ -6,6 +6,7 @@ import {
   refreshToken,
   verifyEmail,
   resendVerificationEmail,
+  createGuest,
 } from "../controllers/userController.js";
 import rateLimit from "express-rate-limit";
 
@@ -22,6 +23,7 @@ router.post("/login", loginUser);
 router.post("/refresh", refreshToken);
 router.post("/verify", verifyEmail);
 router.post("/resend", resendRateLimiter, resendVerificationEmail);
+router.post("/guest", createGuest);
 router.delete("/logout", logoutUser);
 
 export default router;
