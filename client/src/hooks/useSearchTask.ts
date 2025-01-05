@@ -18,7 +18,6 @@ export const useSearchTask = () => {
       });
 
       const { data } = response.data;
-      console.log("Search results:", data); // Debugging log
 
       // Transform tasks if data exists
       const transformedResults = data.map((task: TaskType) => ({

@@ -56,7 +56,7 @@ export const create = async (req, res) => {
 
     if (userObject.role === "guest") {
       const taskCount = await Task.countDocuments({ user: userId });
-      console.log(taskCount);
+
       if (taskCount >= userObject.guestTaskLimit) {
         return res.status(403).json({
           success: false,
@@ -127,10 +127,6 @@ export const getAllTasks = async (req, res) => {
 export const searchTasks = async (req, res) => {
   try {
     const { description } = req.query;
-
-    // Debugging: Log the query and user ID
-    console.log("Search Query:", description);
-    console.log("User ID:", req.user);
 
     const searchCriteria = { user: req.user };
     if (description) {
@@ -257,7 +253,6 @@ export const deleteTask = async (req, res) => {
 
       // Deduct one from the edit/delete limit
       userObject.guestEditLimit -= 1;
-      console.log(userObject.guestEditLimit);
       await userObject.save();
     }
 

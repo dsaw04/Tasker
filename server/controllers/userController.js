@@ -143,7 +143,6 @@ export const loginUser = async (req, res) => {
   });
 
   if (!user) {
-    console.log("Cannot find user!");
     return res.status(400).json({ error: "Cannot find user!" });
   }
 
@@ -151,7 +150,6 @@ export const loginUser = async (req, res) => {
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    console.log("Invalid Login!");
     return res.status(400).json({ error: "Invalid Login!" });
   }
 

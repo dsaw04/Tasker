@@ -61,7 +61,6 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
       onSuccess(); // Trigger a refetch
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.log(error);
         toast.error(error.response?.data.message || "Failed to update task.");
       } else {
         toast.error("An unexpected error occurred.");

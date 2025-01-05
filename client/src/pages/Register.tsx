@@ -32,7 +32,6 @@ const Register: React.FC = () => {
           toast.error("An unexpected error occurred. Please try again.");
         }
       } else {
-        console.log("Error type and structure:", error);
         toast.error("An unexpected error occurred.");
       }
     } finally {

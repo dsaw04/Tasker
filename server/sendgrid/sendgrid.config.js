@@ -22,7 +22,6 @@ export async function sendVerificationEmail(
 
   try {
     await sgMail.send(msg);
-    console.log("Test email sent successfully!");
   } catch (error) {
     console.error(
       "Error sending test email:",
