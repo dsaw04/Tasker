@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { TextField } from "@mui/material";
 import { Img } from "react-image";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -15,8 +17,20 @@ const Login: React.FC = () => {
     try {
       await login(username, password);
       navigate("/");
-    } catch {
-      alert("Login failed. Please check your credentials.");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
+        }
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 

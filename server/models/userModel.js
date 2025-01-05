@@ -26,11 +26,27 @@ const userSchema = new mongoose.Schema({
   },
   refreshToken: {
     type: String,
-    default: null, // Store the refresh token
+    default: null,
   },
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
+  verificationToken: {
+    type: String,
+  },
+  verificationTokenExpires: {
+    type: Date,
   },
 });
 

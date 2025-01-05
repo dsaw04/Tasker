@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { TextField } from "@mui/material";
 import { Img } from "react-image";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -17,9 +19,22 @@ const Register: React.FC = () => {
     setLoading(true); // Disable the button while registering
     try {
       await register(username, email, password);
-      navigate("/"); // Navigate to the home page after successful registration
-    } catch {
-      alert("Registration failed. Please try again.");
+      navigate("/verify"); // Navigate to the verification page after successful registration
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
+        }
+      } else {
+        console.log("Error type and structure:", error);
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false); // Re-enable the button
     }
