@@ -8,12 +8,12 @@ import UpdateTaskModal from "../components/Modals/UpdateTaskModal";
 import DeleteTaskModal from "../components/Modals/DeleteTaskModal";
 import SearchBar from "../components/SearchBar";
 import { useSortTasks } from "../hooks/useSortTasks";
-import Header from "../components/Header/Header";
+import Header from "../components/SectionHeader/SectionHeader";
 import { useFilteredTasks } from "../hooks/useFilteredTasks";
 import { useModal } from "../hooks/useModal";
 import { TaskStatus } from "../types/TaskType";
 import ErrorController from "../components/ErrorController";
-import LogoutButton from "../components/LogoutButton";
+import LogoutButton from "../components/Header/LogoutButton";
 
 function Tasker() {
   const { tasks, loading, error, refetch } = useTasks();

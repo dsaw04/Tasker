@@ -15,6 +15,12 @@ const generateRefreshToken = (userId) => {
   });
 };
 
+const generateGuestRefreshToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_REFRESH_TOKEN, {
+    expiresIn: "30m",
+  });
+};
+
 export const createUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -205,7 +211,12 @@ export const refreshToken = async (req, res) => {
 
     // Rotate the refresh token
     const newRefreshToken = generateRefreshToken(user._id);
-    user.refreshToken = newRefreshToken; // Save new refresh token in DB
+    user.refreshToken = newRefreshToken;
+    if (user.role === "guest") {
+      const newExpirationDate = new Date();
+      newExpirationDate.setMinutes(newExpirationDate.getMinutes() + 30);
+      user.refreshTokenExpiresAt = newExpirationDate;
+    }
     await user.save();
 
     // Send new cookies
@@ -267,13 +278,21 @@ export const createGuest = async (req, res) => {
       guestTaskLimit: 5,
       guestEditLimit: 10,
     });
+    await guestUser.save();
+
+    const token = generateAccessToken(guestUser._id);
+    const refreshToken = generateGuestRefreshToken(guestUser._id);
+    guestUser.refreshToken = refreshToken;
 
     await guestUser.save();
 
-    // Generate a token for the guest user (if authentication is needed)
-    const token = generateAccessToken(guestUser._id);
-
     res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
