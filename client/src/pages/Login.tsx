@@ -64,7 +64,7 @@ const Login: React.FC = () => {
 
       {/* Right Side with Form */}
       <div className="absolute top-0 left-1/3 w-2/3 h-full bg-white rounded-l-[40px] z-20 flex justify-center">
-        <div className="w-[85%] gap-2 flex flex-col mt-24">
+        <div className="w-[85%] gap-2 flex flex-col mt-12">
           <h1 className="text-5xl font-lexend font-bold text-zinc-900 mb-3">
             Welcome back,
           </h1>
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <div className="mt-12">
+              <div className="mt-28">
                 <button
                   type="submit"
                   className="w-full py-3 bg-primary text-white text-xl font-semibold rounded-xl hover:bg-forestGreen transition duration-200"
@@ -111,7 +111,7 @@ const Login: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center justify-center my-6">
+          <div className="flex items-center justify-center my-4 mb-6">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="mx-4 text-zinc-900 font-medium">or</span>
             <div className="flex-grow border-t border-gray-300"></div>
@@ -120,7 +120,7 @@ const Login: React.FC = () => {
           {/* Add Guest Login Button */}
           <button
             onClick={handleGuestLogin}
-            className="mt-4 w-full py-3 bg-secondary text-white text-xl rounded-xl hover:bg-primary transition duration-200"
+            className="w-full py-3 bg-secondary text-white text-xl rounded-xl hover:bg-primary transition duration-200"
           >
             Continue as Guest
             {<FontAwesomeIcon icon={faUser} className="text-white ml-2" />}
