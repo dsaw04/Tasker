@@ -6,6 +6,9 @@ export default {
       colors: {
         olive: "#588157",
         forestGreen: "#344e41",
+        primary: "#436755",
+        secondary: "#A3B18A",
+        accent: "#F77F00",
       },
       textColor: {
         DEFAULT: "#18181b",
