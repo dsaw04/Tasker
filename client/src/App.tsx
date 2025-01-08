@@ -5,6 +5,8 @@ import TaskerApp from "./pages/Tasker";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Register from "./pages/Register";
 import VerificationPage from "./pages/VerificationPage";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const App: React.FC = () => {
   return (
@@ -12,7 +14,16 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/verify" element={<VerificationPage />} />
+        <Route
+          path="/verify"
+          element={
+            <ProtectedRoute>
+              <VerificationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/"
           element={

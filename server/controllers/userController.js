@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
-import { sendVerificationEmail } from "../sendgrid/sendgrid.config.js";
+import {
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+} from "../sendgrid/sendgrid.config.js";
 import crypto from "crypto";
 
 const generateAccessToken = (userId) => {
@@ -19,28 +22,6 @@ const generateGuestRefreshToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_REFRESH_TOKEN, {
     expiresIn: "30m",
   });
-};
-
-/**
- * Decodes a JWT token and extracts the user ID.
- * @param {string} token - The JWT token to decode.
- * @returns {string | null} - The user ID if the token is valid, otherwise null.
- */
-export const getUserIdFromToken = (token) => {
-  try {
-    if (!token) {
-      throw new Error("Token is required");
-    }
-
-    // Decode the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Return the user ID (assuming it's stored as `id` in the token payload)
-    return decoded.id || null;
-  } catch (err) {
-    console.error("Error decoding token:", err.message);
-    return null; // Return null if the token is invalid or decoding fails
-  }
 };
 
 export const createUser = async (req, res) => {
@@ -176,7 +157,7 @@ export const loginUser = async (req, res) => {
         .json({ error: "User not found. Please check your credentials." });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res
@@ -371,5 +352,53 @@ export const getStreak = async (req, res) => {
       message: "Server error occurred.",
       error: err.message,
     });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "Email not registered." });
+    }
+
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "15m",
+    });
+
+    const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+    await sendResetPasswordEmail(email, resetLink, user.username);
+    return res.status(200).json({ message: "Password reset email sent." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error." });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded.id;
+
+    const user = await User.findById(req.user);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    user.password = password;
+
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully." });
+  } catch (error) {
+    console.error(error);
+    if (error.name === "TokenExpiredError") {
+      res.status(400).json({ error: "Token has expired." });
+    }
+    res.status(400).json({ error: "Invalid token." });
   }
 };

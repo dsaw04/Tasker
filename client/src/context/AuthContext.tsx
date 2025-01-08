@@ -6,7 +6,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  loginAsGuest: () => Promise<void>; // Add this method
+  loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   register: (
     username: string,
@@ -16,6 +16,8 @@ export interface AuthContextType {
   verifyEmail: (code: string) => Promise<string>;
   getAccessToken: () => string | null;
   resendVerificationEmail: () => Promise<void | string>;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (token: string, password: string) => Promise<void>; // New method
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -28,6 +30,8 @@ export const AuthContext = createContext<AuthContextType>({
   getAccessToken: () => null,
   resendVerificationEmail: async () => {},
   loginAsGuest: async () => {},
+  forgotPassword: async () => {},
+  resetPassword: async () => {}, // New method
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
@@ -126,9 +130,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const resendVerificationEmail = async (): Promise<void | string> => {
     try {
       const response = await apiClient.post(
-        "/users/resend", // Backend will extract the email from the cookie
+        "/users/resend",
         {},
-        { withCredentials: true } // Ensure cookies are sent with the request
+        { withCredentials: true }
       );
 
       if (response.status !== 200) {
@@ -167,6 +171,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const forgotPassword = async (email: string) => {
+    try {
+      await axios.post("http://localhost:8000/api/users/forgot-password", {
+        email,
+      });
+      console.log("Password reset email sent.");
+    } catch (error) {
+      console.error("Forgot password request failed:", error);
+      throw error;
+    }
+  };
+
+  const resetPassword = async (token: string, password: string) => {
+    try {
+      await axios.put("http://localhost:8000/api/users/reset-password", {
+        token,
+        password,
+      });
+      console.log("Password reset successful.");
+    } catch (error) {
+      console.error("Reset password request failed:", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await apiClient.delete("/users/logout", { withCredentials: true });
@@ -191,6 +220,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         resendVerificationEmail,
         getAccessToken,
         loginAsGuest,
+        forgotPassword,
+        resetPassword,
       }}
     >
       {children}

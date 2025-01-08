@@ -8,6 +8,8 @@ import {
   resendVerificationEmail,
   createGuest,
   getStreak,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/userController.js";
 import rateLimit from "express-rate-limit";
 
@@ -27,5 +29,7 @@ router.post("/verify", verifyEmail);
 router.post("/resend", resendRateLimiter, resendVerificationEmail);
 router.post("/guest", createGuest);
 router.delete("/logout", logoutUser);
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password", resetPassword);
 
 export default router;

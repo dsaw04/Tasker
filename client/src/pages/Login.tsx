@@ -200,13 +200,25 @@ const Login: React.FC = () => {
                 </button>
               </div>
             </form>
-            <p className="mt-4">
-              Don't have an account?{" "}
-              <a href="/register" className="text-secondary hover:text-primary">
+            <div className="justify-between flex mt-4 items-center">
+              <p>
+                Don't have an account?{" "}
+                <a
+                  href="/register"
+                  className="text-secondary hover:text-primary"
+                >
+                  {" "}
+                  Register
+                </a>
+              </p>
+              <a
+                href="/forgot-password"
+                className="text-secondary hover:text-primary"
+              >
                 {" "}
-                Register
+                Forgot Password?
               </a>
-            </p>
+            </div>
           </div>
 
           <div className="flex items-center justify-center my-4 mb-6">

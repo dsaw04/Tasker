@@ -67,9 +67,8 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Pre-save hook to hash password
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password") || this.role === "guest") return next(); // Skip password hashing for guests
+  if (!this.isModified("password") || this.role === "guest") return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
