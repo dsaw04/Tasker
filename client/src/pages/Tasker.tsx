@@ -8,12 +8,12 @@ import UpdateTaskModal from "../components/Modals/UpdateTaskModal";
 import DeleteTaskModal from "../components/Modals/DeleteTaskModal";
 import SearchBar from "../components/SearchBar";
 import { useSortTasks } from "../hooks/useSortTasks";
-import Header from "../components/SectionHeader/SectionHeader";
+import SectionHeader from "../components/SectionHeader/SectionHeader";
 import { useFilteredTasks } from "../hooks/useFilteredTasks";
 import { useModal } from "../hooks/useModal";
 import { TaskStatus } from "../types/TaskType";
 import ErrorController from "../components/ErrorController";
-import LogoutButton from "../components/Header/LogoutButton";
+import Header from "../components/Header/Header";
 
 function Tasker() {
   const { tasks, loading, error, refetch } = useTasks();
@@ -37,7 +37,7 @@ function Tasker() {
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
       <div className="w-[85%] max-w-4xl">
-        <LogoutButton />
+        <Header streak={600} />
         {/* Header */}
         <div className="flex items-center flex-col pb-6">
           <h1 className="pt-8 pb-4 font-lexend font-medium text-6xl text-zinc-900">
@@ -52,7 +52,7 @@ function Tasker() {
         <SearchBar onSearch={handleSearch} />
 
         {/* Header Actions */}
-        <Header
+        <SectionHeader
           sortOption={sortOption}
           setSortOption={setSortOption}
           onAddTask={() => openModal("add")}

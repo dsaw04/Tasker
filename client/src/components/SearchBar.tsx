@@ -17,7 +17,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           type="text"
           placeholder="Search"
           onChange={handleInputChange}
-          className="grow text-zinc-900"
+          className="grow text-zinc-900 font-sans"
         />
         <FontAwesomeIcon icon={faSearch} />
       </label>
