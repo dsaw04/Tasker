@@ -102,7 +102,7 @@ export const getAllTasks = async (req, res) => {
 
     const overdueTasks = await Task.updateMany(
       { user: req.user, date: { $lt: now } },
-      { $set: { isOverdue: true } }
+      { $set: { isOverdue: true, status: "overdue" } }
     );
 
     if (overdueTasks.modifiedCount > 0) {

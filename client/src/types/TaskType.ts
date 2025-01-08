@@ -1,4 +1,4 @@
-export type TaskStatus = "to-do" | "check-in";
+export type TaskStatus = "to-do" | "check-in" | "overdue";
 
 export interface TaskType {
   _id: string;

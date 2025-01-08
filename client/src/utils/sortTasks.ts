@@ -6,7 +6,7 @@ export function sortTasks(tasks: TaskType[], sortOption: string): TaskType[] {
       return new Date(a.date).getTime() - new Date(b.date).getTime(); // Convert to Date if 'date' is a string
     }
     if (sortOption === "priority") {
-      const priorityOrder = ["to-do", "check-in", "done"];
+      const priorityOrder = ["overdue", "to-do", "check-in"];
       return priorityOrder.indexOf(a.status) - priorityOrder.indexOf(b.status);
     }
     if (sortOption === "alphabetical") {
