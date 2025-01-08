@@ -141,52 +141,60 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-  // Find user by username or email
-  const user = await User.findOne({
-    $or: [{ username }, { email: username }],
-  });
+    const user = await User.findOne({
+      $or: [{ username }, { email: username }],
+    });
 
-  if (!user) {
-    return res.status(400).json({ error: "Cannot find user!" });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ error: "User not found. Please check your credentials." });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res
+        .status(400)
+        .json({ error: "Incorrect password. Please try again." });
+    }
+
+    if (!user.isVerified) {
+      return res
+        .status(403)
+        .json({
+          error: "Email verification is pending. Please verify your email.",
+        });
+    }
+
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({ message: "Login successful!", accessToken });
+  } catch (error) {
+    console.error("Login error:", error);
+    res
+      .status(500)
+      .json({ error: "Internal server error. Please try again later." });
   }
-
-  // Compare passwords
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordValid) {
-    return res.status(400).json({ error: "Invalid Login!" });
-  }
-
-  if (!user.isVerified) {
-    return res
-      .status(403)
-      .json({ error: "Please verify your email to log in." });
-  }
-
-  // Generate access and refresh tokens
-  const accessToken = generateAccessToken(user._id);
-  const refreshToken = generateRefreshToken(user._id);
-
-  // Save refresh token in the user document
-  user.refreshToken = refreshToken;
-  await user.save();
-
-  // Set HttpOnly cookies for tokens
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
-
-  res.status(200).json({ message: "Login successful!", accessToken });
 };
 
 export const refreshToken = async (req, res) => {

@@ -151,7 +151,7 @@ const VerificationPage: React.FC = () => {
               <button
                 onClick={handleResendCode}
                 disabled={isResending}
-                className="text-green-500 hover:underline focus:outline-none disabled:opacity-50"
+                className="text-secondary hover:text-primary focus:outline-none disabled:opacity-50"
               >
                 {isResending ? "Resending..." : "Resend Code"}
               </button>

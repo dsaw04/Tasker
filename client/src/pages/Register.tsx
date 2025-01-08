@@ -1,7 +1,15 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { TextField } from "@mui/material";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { Blobs } from "../components/Blobs";
@@ -12,6 +20,7 @@ const Register: React.FC = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { register, loginAsGuest } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -55,6 +64,22 @@ const Register: React.FC = () => {
     }
   };
 
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
+
+  const handleMouseUpPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
+
   return (
     <div className="relative w-screen h-screen">
       {/* Left Side with Blobs and Logo */}
@@ -64,6 +89,16 @@ const Register: React.FC = () => {
       <div className="absolute top-4 left-6 z-20">
         <h1 className="text-white font-extrabold text-[35px] font-lexend">
           tasker
+        </h1>
+      </div>
+      <div className="absolute top-[10%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold text-[60px] font-lexend">
+          Sort out your
+        </h1>
+      </div>
+      <div className="absolute top-[20%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold text-[60px] font-lexend">
+          life
         </h1>
       </div>
 
@@ -91,14 +126,35 @@ const Register: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <TextField
-                  fullWidth
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <FormControl sx={{ width: "100%" }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label={
+                            showPassword
+                              ? "hide the password"
+                              : "display the password"
+                          }
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          onMouseUp={handleMouseUpPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                </FormControl>
               </div>
               <div className="mt-10">
                 <button
@@ -145,6 +201,12 @@ const Register: React.FC = () => {
           </button>
         </div>
       </div>
+
+      <img
+        src="/assets/tasker-duck.svg"
+        alt="Tasker Duck"
+        className="absolute top-[15.5%] left-[%] z-20 w-[600px] h-auto drop-shadow-md"
+      />
     </div>
   );
 };
