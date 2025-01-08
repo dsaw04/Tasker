@@ -13,13 +13,17 @@ const taskSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["to-do", "check-in", "done"],
+      enum: ["to-do", "check-in"],
       default: "to-do",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // Reference to the User model
       required: true,
+    },
+    isOverdue: {
+      type: Boolean,
+      default: false,
     },
   },
   {

@@ -11,7 +11,7 @@ export const useDeleteTask = (onSuccess: () => void) => {
     try {
       await apiClient.delete(`/task/${taskId}`);
       toast.success("Task deleted successfully!");
-      onSuccess(); // Trigger a refetch or parent success action
+      onSuccess(); 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message || "Failed to delete task.");

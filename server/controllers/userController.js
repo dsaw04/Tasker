@@ -21,6 +21,28 @@ const generateGuestRefreshToken = (userId) => {
   });
 };
 
+/**
+ * Decodes a JWT token and extracts the user ID.
+ * @param {string} token - The JWT token to decode.
+ * @returns {string | null} - The user ID if the token is valid, otherwise null.
+ */
+export const getUserIdFromToken = (token) => {
+  try {
+    if (!token) {
+      throw new Error("Token is required");
+    }
+
+    // Decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Return the user ID (assuming it's stored as `id` in the token payload)
+    return decoded.id || null;
+  } catch (err) {
+    console.error("Error decoding token:", err.message);
+    return null; // Return null if the token is invalid or decoding fails
+  }
+};
+
 export const createUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -163,11 +185,9 @@ export const loginUser = async (req, res) => {
     }
 
     if (!user.isVerified) {
-      return res
-        .status(403)
-        .json({
-          error: "Email verification is pending. Please verify your email.",
-        });
+      return res.status(403).json({
+        error: "Email verification is pending. Please verify your email.",
+      });
     }
 
     const accessToken = generateAccessToken(user._id);
@@ -318,5 +338,31 @@ export const createGuest = async (req, res) => {
   } catch (error) {
     console.error("Error creating guest user:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getStreak = async (req, res) => {
+  try {
+    const userId = getUserIdFromToken(req.cookies.accessToken);
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      streak: user.streak,
+    });
+  } catch (err) {
+    console.error("Error fetching streak:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred.",
+      error: err.message,
+    });
   }
 };

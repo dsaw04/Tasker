@@ -29,7 +29,7 @@ export const useAddTask = (onSuccess: () => void) => {
   const resetForm = () => {
     setFormData({
       description: "",
-      date: getDefaultDate(), // Reset with updated current date
+      date: getDefaultDate(), 
       status: "to-do",
     });
   };
@@ -39,12 +39,12 @@ export const useAddTask = (onSuccess: () => void) => {
     setIsSubmitting(true);
 
     try {
-      await apiClient.post("/task", formData); // Use `apiClient`
+      await apiClient.post("/task", formData); 
       toast.success("Task added successfully!");
       resetForm();
-      onSuccess(); // Trigger parent success callback (e.g., refetch tasks)
+      onSuccess(); 
     } catch (error) {
-      toast.error(handleApiError(error)); // Handle backend error messages
+      toast.error(handleApiError(error)); 
     } finally {
       setIsSubmitting(false);
     }

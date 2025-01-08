@@ -54,7 +54,7 @@ export default function UpdateTaskModal({
             value={formData.date}
             onChange={handleChange}
             className="border p-2 rounded w-full"
-            min={getMinDateTime()} // Prevent setting date/time in the past
+            min={getMinDateTime()}
           />
         </label>
 
@@ -68,7 +68,6 @@ export default function UpdateTaskModal({
           >
             <option value="to-do">To-do</option>
             <option value="check-in">Check-in</option>
-            <option value="done">Done</option>
           </select>
         </label>
         <div className="flex gap-2 justify-end">

@@ -17,7 +17,7 @@ apiClient.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    config.withCredentials = true; // Include cookies with requests
+    config.withCredentials = true;
     return config;
   },
   (error) => Promise.reject(error)

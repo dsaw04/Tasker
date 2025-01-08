@@ -8,11 +8,12 @@ interface TaskListProps {
     taskId: string,
     taskName: string,
     taskDate: Date,
-    taskStatus: string
+    taskStatus: string,
   ) => void;
+  onMarkDone: (taskId: string, taskName: string) => void;
 }
 
-export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
+export default function TaskList({ tasks, onDelete, onUpdate , onMarkDone}: TaskListProps) {
   return (
     <div className="task-list">
       {tasks.map((task) => (
@@ -25,8 +26,10 @@ export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
             title={task.description}
             date={task.date}
             status={task.status}
+            isOverdue={task.isOverdue}
             onDelete={onDelete}
             onUpdate={onUpdate}
+            onMarkDone = {onMarkDone}
           />
         </div>
       ))}

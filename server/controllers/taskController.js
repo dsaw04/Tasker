@@ -99,6 +99,13 @@ export const getAllTasks = async (req, res) => {
       });
     }
 
+    const now = new Date();
+
+    await Task.updateMany(
+      { user: req.user, date: { $lt: now } },
+      { $set: { isOverdue: true } }
+    );
+
     const tasks = await Task.find({ user: req.user });
 
     if (!tasks.length) {
@@ -184,6 +191,12 @@ export const updateTask = async (req, res) => {
       });
     }
 
+    const now = new Date();
+
+    if (updates.date && new Date(updates.date) > now) {
+      task.isOverdue = false;
+    }
+
     // Enforce guest edit limit
     const userObject = await User.findById(req.user);
 
@@ -266,6 +279,54 @@ export const deleteTask = async (req, res) => {
     });
   } catch (err) {
     console.error("Error deleting task:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred.",
+      error: err.message,
+    });
+  }
+};
+
+export const markDone = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid task ID.",
+      });
+    }
+
+    const task = await Task.findOne({ _id: id, user: req.user });
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found or unauthorized access.",
+      });
+    }
+
+    // Find the authenticated user
+    const userObject = await User.findById(req.user);
+
+    if (!userObject) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Increment streak and delete task
+    userObject.streak += 1;
+    await Promise.all([userObject.save(), task.deleteOne()]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Task marked as done and streak updated successfully!",
+    });
+  } catch (err) {
+    console.error("Error marking task as done:", err.message);
     res.status(500).json({
       success: false,
       message: "Server error occurred.",

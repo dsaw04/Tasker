@@ -7,6 +7,7 @@ import {
   verifyEmail,
   resendVerificationEmail,
   createGuest,
+  getStreak,
 } from "../controllers/userController.js";
 import rateLimit from "express-rate-limit";
 
@@ -18,6 +19,7 @@ const resendRateLimiter = rateLimit({
   message: "Too many resend attempts. Please try again later.",
 });
 
+router.get("/streak", getStreak);
 router.post("/register", createUser);
 router.post("/login", loginUser);
 router.post("/refresh", refreshToken);

@@ -61,6 +61,10 @@ const userSchema = new mongoose.Schema({
   guestEditLimit: {
     type: Number,
   },
+  streak: {
+    type: Number,
+    default: 0,
+  },
 });
 
 // Pre-save hook to hash password

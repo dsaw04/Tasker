@@ -1,21 +1,27 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPenToSquare,
+  faTrashCan,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { TaskStatus } from "../../types/TaskType";
 
 interface TaskProps {
   taskId: string;
   title: string;
-  date: Date; // Ensure date is always a Date object
+  date: Date;
   status: TaskStatus;
+  isOverdue: boolean;
   onDelete: (taskId: string, taskName: string) => void;
   onUpdate: (
     taskId: string,
     taskName: string,
-    taskDate: Date, // Use Date type here
+    taskDate: Date,
     taskStatus: TaskStatus
   ) => void;
+  onMarkDone: (taskId: string, taskName: string) => void; // Added onMarkDone prop
 }
 
 export default function Task({
@@ -23,8 +29,10 @@ export default function Task({
   title,
   date,
   status,
+  isOverdue,
   onDelete,
   onUpdate,
+  onMarkDone,
 }: TaskProps) {
   const formatDate = (date: Date | string) => {
     try {
@@ -61,9 +69,9 @@ export default function Task({
     >
       <div
         className={`w-[2%] ${
-          status === "to-do"
+          isOverdue
             ? "bg-red-400"
-            : status === "check-in"
+            : status === "to-do"
             ? "bg-yellow-400"
             : "bg-green-400"
         } rounded-l-3xl`}
@@ -74,19 +82,30 @@ export default function Task({
             {title}
           </h3>
           <p className="text-gray-600">{formatDate(date)}</p>
-          <p
-            className={`status ${
-              status === "to-do"
-                ? "text-red-500"
-                : status === "check-in"
-                ? "text-yellow-500"
-                : "text-green-500"
-            }`}
-          >
-            {capitalizeStatus(status)}
-          </p>
+          {isOverdue ? (
+            <p className="text-red-500">Overdue</p>
+          ) : (
+            <p
+              className={`status ${
+                status === "to-do" ? "text-yellow-500" : "text-green-500"
+              }`}
+            >
+              {capitalizeStatus(status)}
+            </p>
+          )}
         </div>
         <div className="flex self-center justify-self-end gap-2">
+          {/* Mark Done Button */}
+          <button
+            onClick={() => onMarkDone(taskId, title)}
+            className="transition-transform duration-100 ease-in-out transform hover:scale-105"
+          >
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="p-2 border rounded-lg hover:border-2 text-green-500"
+            />
+          </button>
+          {/* Update Button */}
           <button
             onClick={() => onUpdate(taskId, title, date, status)}
             className="transition-transform duration-100 ease-in-out transform hover:scale-105"
@@ -96,6 +115,7 @@ export default function Task({
               className="p-2 border rounded-lg hover:border-2"
             />
           </button>
+          {/* Delete Button */}
           <button
             onClick={() => onDelete(taskId, title)}
             className="transition-transform duration-100 ease-in-out transform hover:scale-105"
