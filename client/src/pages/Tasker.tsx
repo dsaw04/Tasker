@@ -49,6 +49,7 @@ function Tasker() {
           streak={streak}
           loading={streakLoading}
           error={streakError}
+          refetchStreak={refetchStreak}
         />
 
         <div className="flex items-center flex-col pb-6">

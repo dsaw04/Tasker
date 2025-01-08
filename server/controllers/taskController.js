@@ -91,7 +91,6 @@ export const create = async (req, res) => {
 
 export const getAllTasks = async (req, res) => {
   try {
-    // Debugging: Check req.user
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -101,10 +100,14 @@ export const getAllTasks = async (req, res) => {
 
     const now = new Date();
 
-    await Task.updateMany(
+    const overdueTasks = await Task.updateMany(
       { user: req.user, date: { $lt: now } },
       { $set: { isOverdue: true } }
     );
+
+    if (overdueTasks.modifiedCount > 0) {
+      await User.findByIdAndUpdate(req.user, { $set: { streak: 0 } });
+    }
 
     const tasks = await Task.find({ user: req.user });
 
@@ -112,7 +115,7 @@ export const getAllTasks = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "No tasks found.",
-        data: [], // Return an empty array for no tasks
+        data: [],
       });
     }
 
@@ -318,7 +321,9 @@ export const markDone = async (req, res) => {
     }
 
     // Increment streak and delete task
-    userObject.streak += 1;
+    if (!task.isOverdue) {
+      userObject.streak += 1;
+    }
     await Promise.all([userObject.save(), task.deleteOne()]);
 
     return res.status(200).json({

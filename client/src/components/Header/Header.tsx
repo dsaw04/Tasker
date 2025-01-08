@@ -5,9 +5,10 @@ interface HeaderProps {
   streak: number | null;
   loading: boolean;
   error: string | null;
+  refetchStreak: () => void; // New prop to refresh streak
 }
 
-function Header({ streak, loading, error }: HeaderProps) {
+function Header({ streak, loading, error, refetchStreak }: HeaderProps) {
   const getAnimationSource = (): string => {
     if (streak === null || streak < 50) return "/animations/Streak.json";
     if (streak >= 50 && streak < 100) return "/animations/Streak-Orange.json";
@@ -29,6 +30,12 @@ function Header({ streak, loading, error }: HeaderProps) {
     return (
       <div className="flex w-full mt-2 justify-end items-center gap-12">
         <p className="text-red-500">Error: {error}</p>
+        <button
+          onClick={refetchStreak}
+          className="bg-primary text-white px-4 py-2 rounded-lg"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -40,7 +47,7 @@ function Header({ streak, loading, error }: HeaderProps) {
           autoplay
           loop
           src={getAnimationSource()}
-          style={{ height: "50px" }} // Adjust size
+          style={{ height: "50px" }}
         />
         <p className="text-xl font-medium">{streak}</p>
       </div>
