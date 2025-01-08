@@ -343,8 +343,15 @@ export const createGuest = async (req, res) => {
 
 export const getStreak = async (req, res) => {
   try {
-    const userId = getUserIdFromToken(req.cookies.accessToken);
-    const user = await User.findById(userId);
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ error: "Access Denied: Token missing" });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded.id;
+
+    const user = await User.findById(req.user);
 
     if (!user) {
       return res.status(404).json({
