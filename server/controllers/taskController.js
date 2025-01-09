@@ -44,6 +44,7 @@ export const create = async (req, res) => {
     // Check for duplicate tasks for the same user
     const taskExist = await Task.findOne({
       description,
+      date,
       user: userId, // Ensure it's scoped to the current user
     });
 

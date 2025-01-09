@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTasks } from "../hooks/useTasks";
 import { useSearchTask } from "../hooks/useSearchTask";
 import { useStreak } from "../hooks/useStreak";
@@ -16,6 +16,8 @@ import { useModal } from "../hooks/useModal";
 import { TaskStatus } from "../types/TaskType";
 import ErrorController from "../components/ErrorController";
 import Header from "../components/Header/Header";
+import DateSlider from "../components/DateSlider/DateSlider";
+import { format } from "date-fns";
 
 function Tasker() {
   const { tasks, loading, error, refetch } = useTasks();
@@ -28,7 +30,12 @@ function Tasker() {
   const { results, searchTasks, resetResults, searchError } = useSearchTask();
   const [sortOption, setSortOption] = useState("chronological");
 
-  const filteredTasks = useFilteredTasks(tasks, results);
+  const taskDates = useMemo(() => {
+    return tasks.map((task) => format(new Date(task.date), "yyyy-MM-dd"));
+  }, [tasks]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  const filteredTasks = useFilteredTasks(tasks, results, selectedDate);
   const sortedTasks = useSortTasks(filteredTasks, sortOption);
 
   const { isModalOpen, modalContent, selectedTask, openModal, closeModal } =
@@ -50,6 +57,12 @@ function Tasker() {
           loading={streakLoading}
           error={streakError}
           refetchStreak={refetchStreak}
+        />
+
+        <DateSlider
+          taskDates={taskDates}
+          onDateSelect={setSelectedDate}
+          selectedDate={selectedDate}
         />
 
         <div className="flex items-center flex-col pb-6">

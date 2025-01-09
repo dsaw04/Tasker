@@ -67,7 +67,6 @@ export default function AddTaskModal({
           >
             <option value="to-do">To-do</option>
             <option value="check-in">Check-in</option>
-            <option value="done">Done</option>
           </select>
         </label>
         <div className="flex gap-2 justify-end">
