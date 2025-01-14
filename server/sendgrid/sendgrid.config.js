@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import {
   verificationEmailTemplate,
   resetEmailTemplate,
+  dailyTasksTemplate,
 } from "./emailTemplate.js";
 
 // Load environment variables
@@ -19,6 +20,7 @@ export async function sendVerificationEmail(
   const msg = {
     to: { email },
     from: "admin@taskrapp.org",
+    name: "Tasker",
     subject: "Verify your email",
     html: verificationEmailTemplate(username, verificationToken),
   };
@@ -37,6 +39,7 @@ export async function sendResetPasswordEmail(email, resetLink, username) {
   const msg = {
     to: { email },
     from: "admin@taskrapp.org",
+    name: "Tasker",
     subject: "Reset your password",
     html: resetEmailTemplate(username, resetLink),
   };
@@ -48,5 +51,28 @@ export async function sendResetPasswordEmail(email, resetLink, username) {
       "Error sending test email:",
       error.response ? error.response.body : error
     );
+  }
+}
+
+export async function sendDailyTaskEmail(email, tasks, username) {
+  const msg = {
+    to: email,
+    from: {
+      email: "admin@taskrapp.org",
+      name: "Tasker",
+    },
+    subject: "Your Tasks for Today",
+    html: dailyTasksTemplate(username, tasks),
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log(`Daily tasks email sent to ${email}`);
+  } catch (error) {
+    console.error(
+      "Error sending daily tasks email:",
+      error.response ? error.response.body : error
+    );
+    throw error; // Re-throw the error for the consumer to handle it
   }
 }

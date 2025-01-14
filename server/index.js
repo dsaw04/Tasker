@@ -5,6 +5,10 @@ import taskRoute from "./routes/taskRoutes.js";
 import userRoute from "./routes/userRoutes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { connectRabbitMQ } from "./utils/rabbitmq.js";
+import { startEmailConsumer } from "./queues/emailConsumer.js";
+import { scheduleCleanupJob } from "./cronJobs/cleanupJobs.js";
+import { scheduleDailyTaskEmail } from "./cronJobs/dailyTaskEmail.js";
 
 dotenv.config();
 
@@ -30,8 +34,12 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => {
+  .then(async () => {
     console.log("Database connected successfully!");
+    await connectRabbitMQ();
+    startEmailConsumer();
+    scheduleDailyTaskEmail();
+    scheduleCleanupJob();
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
