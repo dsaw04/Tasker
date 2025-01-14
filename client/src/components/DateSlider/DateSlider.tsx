@@ -100,7 +100,8 @@ const DateSlider: React.FC<DateSliderProps> = ({
       {/* Navigation Buttons */}
       <button
         onClick={() => scroll("left")}
-        className="absolute top-1/2 transform -translate-y-1/2 text-white w-10 h-10 rounded-full flex items-center justify-center"
+        className="tooltip tooltip-bottom absolute top-1/2 transform -translate-y-1/2 text-white w-10 h-10 rounded-full flex items-center justify-center"
+        data-tip="Scroll to this week."
       >
         <FontAwesomeIcon
           icon={faArrowAltCircleLeft}
@@ -109,7 +110,8 @@ const DateSlider: React.FC<DateSliderProps> = ({
       </button>
       <button
         onClick={() => scroll("right")}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-10 h-10 rounded-full flex items-center justify-center"
+        className="absolute right-0 tooltip tooltip-bottom top-1/2 transform -translate-y-1/2 text-white w-10 h-10 rounded-full flex items-center justify-center"
+        data-tip="Scroll for more days."
       >
         <FontAwesomeIcon
           icon={faArrowAltCircleRight}
