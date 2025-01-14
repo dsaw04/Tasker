@@ -205,7 +205,7 @@ const Register: React.FC = () => {
       <img
         src="/assets/tasker-duck.svg"
         alt="Tasker Duck"
-        className="absolute top-[15.5%] left-[%] z-20 w-[600px] h-auto drop-shadow-md"
+        className="absolute bottom-[0%] left-[0%] z-20 w-[600px] h-auto drop-shadow-md"
       />
     </div>
   );

@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import VerificationPage from "./pages/VerificationPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import { NotFound } from "./pages/NotFound";
 
 const App: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const App: React.FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/*" element={<NotFound />}></Route>
       </Routes>
     </Router>
   );
