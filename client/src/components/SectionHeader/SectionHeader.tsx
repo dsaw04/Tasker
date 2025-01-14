@@ -16,7 +16,8 @@ function Header({ sortOption, setSortOption, onAddTask }: HeaderProps) {
       <div className="flex gap-2 relative">
         <button
           onClick={onAddTask}
-          className="flex justify-center items-center w-10 h-10 rounded-full border hover:bg-gray-200"
+          className="flex justify-center items-center w-10 h-10 rounded-full border hover:bg-gray-200 tooltip tooltip-bottom"
+          data-tip="Add a task."
         >
           <FontAwesomeIcon icon={faPlus} />
         </button>

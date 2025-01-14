@@ -98,7 +98,8 @@ export default function Task({
           {/* Mark Done Button */}
           <button
             onClick={() => onMarkDone(taskId, title)}
-            className="transition-transform duration-100 ease-in-out transform hover:scale-105"
+            className="transition-transform duration-100 ease-in-out transform hover:scale-105 tooltip tooltip-bottom"
+            data-tip="Mark this task as done. This increments your streak!"
           >
             <FontAwesomeIcon
               icon={faCheckCircle}
@@ -108,7 +109,8 @@ export default function Task({
           {/* Update Button */}
           <button
             onClick={() => onUpdate(taskId, title, date, status)}
-            className="transition-transform duration-100 ease-in-out transform hover:scale-105"
+            className="transition-transform duration-100 ease-in-out transform hover:scale-105 tooltip tooltip-bottom"
+            data-tip="Update this task."
           >
             <FontAwesomeIcon
               icon={faPenToSquare}
@@ -118,7 +120,8 @@ export default function Task({
           {/* Delete Button */}
           <button
             onClick={() => onDelete(taskId, title)}
-            className="transition-transform duration-100 ease-in-out transform hover:scale-105"
+            className="transition-transform duration-100 ease-in-out transform hover:scale-105 tooltip tooltip-bottom"
+            data-tip="Delete this task."
           >
             <FontAwesomeIcon
               icon={faTrashCan}
