@@ -41,17 +41,25 @@ function Header({ streak, loading, error, refetchStreak }: HeaderProps) {
   }
 
   return (
-    <div className="flex w-full mt-2 justify-end items-center gap-12">
-      <div className="flex items-center gap-1">
-        <Player
-          autoplay
-          loop
-          src={getAnimationSource()}
-          style={{ height: "50px" }}
-        />
-        <p className="text-xl font-medium">{streak}</p>
+    <div className="flex w-full mt-2 justify-between items-center">
+      <img
+        src="/assets/tasker-logo-black.svg"
+        alt="Tasker Alt"
+        className="w-[7%] h-auto justify-self-start"
+        draggable="false"
+      />
+      <div className="gap-12 flex items-center">
+        <div className="flex items-center gap-1">
+          <Player
+            autoplay
+            loop
+            src={getAnimationSource()}
+            style={{ height: "50px" }}
+          />
+          <p className="text-xl font-medium">{streak}</p>
+        </div>
+        <LogoutButton />
       </div>
-      <LogoutButton />
     </div>
   );
 }

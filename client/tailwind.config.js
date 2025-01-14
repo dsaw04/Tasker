@@ -16,8 +16,13 @@ export default {
       fontFamily: {
         sans: ["Funnel Sans", "ui-sans-serif", "system-ui"],
         lexend: ["Lexend", "ui-sans-serif", "system-ui"],
+        milanello: ["Milanello", "sans-serif"],
         serif: ["Playfair Display", "ui-serif"], // Default serif font
         mono: ["Fira Code", "ui-monospace", "SFMono-Regular"], // Default monospace font
+      },
+      letterSpacing: {
+        tightest: "-.05em",
+        extraWide: ".3em",
       },
     },
   },

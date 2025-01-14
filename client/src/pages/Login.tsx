@@ -109,18 +109,21 @@ const Login: React.FC = () => {
       <div className="absolute top-0 left-0 w-[40%] h-full z-10">
         <Blobs />
       </div>
-      <div className="absolute top-4 left-6 z-20">
-        <h1 className="text-white font-extrabold text-[35px] font-lexend">
-          tasker
-        </h1>
+      <div className="absolute top-[0%] left-[0%] z-20">
+        <img
+          src="/assets/tasker-logo.svg"
+          alt="Tasker Logo"
+          className="w-[30%] h-auto"
+          draggable="false"
+        />
       </div>
-      <div className="absolute top-[10%] left-[2%] z-20">
-        <h1 className="text-white font-extrabold text-[60px] font-lexend">
+      <div className="absolute top-[13%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold text-[60px] font-milanello tracking-wider">
           Sort out your
         </h1>
       </div>
-      <div className="absolute top-[20%] left-[2%] z-20">
-        <h1 className="text-white font-extrabold text-[60px] font-lexend">
+      <div className="absolute top-[22%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold text-[60px] font-milanello tracking-wider">
           life
         </h1>
       </div>
@@ -242,6 +245,7 @@ const Login: React.FC = () => {
         src="/assets/tasker-duck.svg"
         alt="Tasker Duck"
         className="absolute bottom-[0%] left-[0%] z-20 w-[600px] h-auto drop-shadow-md"
+        draggable="false"
       />
     </div>
   );
