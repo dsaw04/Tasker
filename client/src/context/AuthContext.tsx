@@ -7,6 +7,7 @@ export interface AuthContextType {
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   loginAsGuest: () => Promise<void>;
+  loginWithGoogle: () => void;
   logout: () => Promise<void>;
   register: (
     username: string,
@@ -17,13 +18,14 @@ export interface AuthContextType {
   getAccessToken: () => string | null;
   resendVerificationEmail: () => Promise<void | string>;
   forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (token: string, password: string) => Promise<void>; // New method
+  resetPassword: (token: string, password: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   loading: true,
   login: async () => {},
+  loginWithGoogle: () => {},
   logout: async () => {},
   register: async () => {},
   verifyEmail: async () => "",
@@ -44,11 +46,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Function to set the access token and update global state
   const updateAccessToken = (token: string | null) => {
     setAccessTokenState(token);
-    setAccessToken(token); // Set token globally for apiClient
+    setAccessToken(token);
   };
 
+  let count = 0;
   useEffect(() => {
     const checkAuth = async () => {
+      count++;
+      console.log(count);
       try {
         const response = await axios.post(
           "http://localhost:8000/api/users/refresh",
@@ -67,6 +72,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
     checkAuth();
   }, []);
+
+  const loginWithGoogle = () => {
+    window.location.href = "http://localhost:8000/api/users/google";
+  };
 
   const login = async (username: string, password: string) => {
     try {
@@ -214,6 +223,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         isAuthenticated,
         loading,
         login,
+        loginWithGoogle,
         logout,
         register,
         verifyEmail,

@@ -18,13 +18,11 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <React.StrictMode>
-    <AuthProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-        <Toaster position="top-center" reverseOrder={false} />
-      </ThemeProvider>
-    </AuthProvider>
-  </React.StrictMode>
+  <AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+      <Toaster position="top-center" reverseOrder={false} />
+    </ThemeProvider>
+  </AuthProvider>
 );

@@ -42,9 +42,15 @@ export const create = async (req, res) => {
     }
 
     // Check for duplicate tasks for the same user
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
     const taskExist = await Task.findOne({
       description,
-      date,
+      date: { $gte: startOfDay, $lte: endOfDay },
       user: userId, // Ensure it's scoped to the current user
     });
 

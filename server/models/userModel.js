@@ -5,13 +5,12 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   },
   email: {
     type: String,
     required: function () {
-      return this.role !== "guest"; // Email is required only for non-guest users
+      return this.role !== "guest" && !this.githubId;
     },
     unique: true,
     lowercase: true,
@@ -20,8 +19,14 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: function () {
-      return this.role !== "guest"; // Password is required only for non-guest users
+      return this.role !== "guest" && !this.googleId && !this.githubId;
     },
+  },
+  googleId: {
+    type: String,
+  },
+  githubId:{
+    type: String,
   },
   role: {
     type: String,

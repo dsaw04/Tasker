@@ -15,6 +15,7 @@ import { AxiosError } from "axios";
 import { Blobs } from "../components/Blobs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightToBracket, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -22,8 +23,13 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const { login, loginAsGuest } = useContext(AuthContext);
+  const { isAuthenticated, login, loginAsGuest, loginWithGoogle } =
+    useContext(AuthContext);
   const navigate = useNavigate();
+
+  if (isAuthenticated) {
+    navigate("/");
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +140,7 @@ const Login: React.FC = () => {
           <h1 className="text-5xl font-lexend font-bold text-zinc-900 mb-3">
             Welcome back,
           </h1>
-          <div className="mt-20">
+          <div className="mt-12">
             <form onSubmit={handleLogin}>
               <div className="space-y-8">
                 {/* Username Field */}
@@ -188,7 +194,7 @@ const Login: React.FC = () => {
                   )}
                 </FormControl>
               </div>
-              <div className="mt-20">
+              <div className="mt-12 flex-col flex gap-5">
                 <button
                   type="submit"
                   className="w-full py-3 bg-primary text-white text-xl font-semibold rounded-xl hover:bg-forestGreen transition duration-200"
@@ -201,6 +207,35 @@ const Login: React.FC = () => {
                     />
                   }
                 </button>
+
+                <div className="flex justify-around">
+                  <button
+                    type="button"
+                    onClick={loginWithGoogle}
+                    className="w-fit p-3 place-self-center gap-3 flex items-center bg-white text-primary text-xl font-semibold rounded-xl hover:bg-gray-200 transition duration-200"
+                  >
+                    <FontAwesomeIcon
+                      icon={faGoogle}
+                      className="text-primary ml-2"
+                    />
+                    Login with Google
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      (window.location.href =
+                        "http://localhost:8000/api/users/github")
+                    }
+                    className="w-fit p-3 place-self-center gap-3 flex items-center bg-black text-white text-xl font-semibold rounded-xl hover:bg-gray-800 transition duration-200"
+                  >
+                    <FontAwesomeIcon
+                      icon={faGithub}
+                      className="text-white ml-2"
+                    />
+                    Login with GitHub
+                  </button>
+                </div>
               </div>
             </form>
             <div className="justify-between flex mt-4 items-center">

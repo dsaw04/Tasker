@@ -157,7 +157,7 @@ export const loginUser = async (req, res) => {
         .json({ error: "User not found. Please check your credentials." });
     }
 
-    const isPasswordValid = bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res
@@ -212,10 +212,9 @@ export const refreshToken = async (req, res) => {
     if (!user) {
       return res
         .status(403)
-        .json({ error: "Invalid or expired refresh token" });
+        .json({ error: "User not found. Invalid or expired refresh token" });
     }
 
-    // Generate a new access token
     const newAccessToken = generateAccessToken(user._id);
 
     // Rotate the refresh token
@@ -228,8 +227,13 @@ export const refreshToken = async (req, res) => {
     }
     await user.save();
 
-    // Send new cookies
     res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",

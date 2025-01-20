@@ -22,8 +22,12 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register, loginAsGuest } = useContext(AuthContext);
+  const { isAuthenticated, register, loginAsGuest } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  if (isAuthenticated) {
+    navigate("/");
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +95,7 @@ const Register: React.FC = () => {
           src="/assets/tasker-logo.svg"
           alt="Tasker Logo"
           className="w-[30%] h-auto"
-          draggable = "false"
+          draggable="false"
         />
       </div>
       <div className="absolute top-[13%] left-[2%] z-20">
@@ -209,7 +213,7 @@ const Register: React.FC = () => {
         src="/assets/tasker-duck.svg"
         alt="Tasker Duck"
         className="absolute bottom-[0%] left-[0%] z-20 w-[600px] h-auto drop-shadow-md"
-        draggable = "false"
+        draggable="false"
       />
     </div>
   );
