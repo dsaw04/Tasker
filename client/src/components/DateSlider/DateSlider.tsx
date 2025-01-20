@@ -75,7 +75,7 @@ const DateSlider: React.FC<DateSliderProps> = ({
                     isToday(date)
                       ? "bg-orange-100"
                       : isSelected
-                      ? "bg-blue-200"
+                      ? "bg-green-50"
                       : "bg-white"
                   }`}
                   title={formattedDate}
@@ -84,9 +84,9 @@ const DateSlider: React.FC<DateSliderProps> = ({
                   <div
                     className={`${
                       hasTasks
-                        ? "underline decoration-yellow-500 decoration-4"
+                        ? "underline decoration-accent decoration-4"
                         : ""
-                    } ${isSelected ? "font-bold text-blue-400" : ""}`}
+                    } ${isSelected ? "font-bold text-accent" : ""}`}
                   >
                     {format(date, "dd")}
                   </div>

@@ -22,12 +22,8 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, register, loginAsGuest } = useContext(AuthContext);
+  const { register, loginAsGuest } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  if (isAuthenticated) {
-    navigate("/");
-  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

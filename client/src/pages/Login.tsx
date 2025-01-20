@@ -15,7 +15,7 @@ import { AxiosError } from "axios";
 import { Blobs } from "../components/Blobs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightToBracket, faUser } from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -23,13 +23,8 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const { isAuthenticated, login, loginAsGuest, loginWithGoogle } =
-    useContext(AuthContext);
+  const { login, loginAsGuest, loginWithGoogle } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  if (isAuthenticated) {
-    navigate("/");
-  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,7 +141,7 @@ const Login: React.FC = () => {
                 {/* Username Field */}
                 <TextField
                   fullWidth
-                  label="Username"
+                  label="Username or Email"
                   variant="outlined"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -212,11 +207,12 @@ const Login: React.FC = () => {
                   <button
                     type="button"
                     onClick={loginWithGoogle}
-                    className="w-fit p-3 place-self-center gap-3 flex items-center bg-white text-primary text-xl font-semibold rounded-xl hover:bg-gray-200 transition duration-200"
+                    className="w-fit p-3 place-self-center gap-3 flex items-center bg-gray-200 text-primary text-xl font-semibold rounded-xl hover:bg-gray-300 transition duration-200"
                   >
-                    <FontAwesomeIcon
-                      icon={faGoogle}
-                      className="text-primary ml-2"
+                    <img
+                      src="/assets/google-color.svg"
+                      alt="google-logo"
+                      className="w-[20px] h-auto"
                     />
                     Login with Google
                   </button>
