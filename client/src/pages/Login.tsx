@@ -160,7 +160,7 @@ const Login: React.FC = () => {
                 {/* Username Field */}
                 <TextField
                   fullWidth
-                  label="Username or Email"
+                  label="Email"
                   variant="outlined"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}

@@ -18,12 +18,13 @@ import {
   emailRateLimiter,
   guestRateLimiter,
 } from "../utils/rateLimiter.js";
+import { validateUserRegistration } from "../validators/authValidators.js";
 
 const router = express.Router();
 
 router.get("/streak", getStreak);
-router.post("/register", registerRateLimiter, createUser);
-router.post("/login", loginRateLimiter, loginUser);
+router.post("/register", validateUserRegistration, createUser); //temp remove registerRateLimiter
+router.post("/login", loginUser); //temp remove loginRateLimiter
 router.post("/refresh", refreshToken);
 router.post("/verify", emailRateLimiter, verifyEmail);
 router.post("/resend", emailRateLimiter, resendVerificationEmail);

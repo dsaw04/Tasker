@@ -22,11 +22,71 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [usernameError, setUsernameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
   const { register, loginAsGuest } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const validatePassword = (password: string) => {
+    const errors = [];
+  
+    if (password.length < 8) {
+      errors.push("at least 8 characters");
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push("one uppercase letter");
+    }
+    if (!/[!@#$%&^*]/.test(password)) {
+      errors.push("one special character (!@#$%&^*)");
+    }
+    if (!/\d/.test(password)) {
+      errors.push("one number (0-9)");
+    }
+  
+    return errors;
+  };
+  
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUsernameError(false);
+    setEmailError(false);
+    setPasswordError(false);
+    setPasswordErrorMessage("");
+
+    let hasError = false;
+
+    //Username validation
+    if (!username.trim()) {
+      setUsernameError(true);
+      hasError = true;
+    }
+
+    //Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email)) {
+      setEmailError(true);
+      hasError = true;
+    }
+
+    // Password validation
+    const passwordErrors = validatePassword(password);
+    if (passwordErrors.length > 0) {
+      setPasswordError(true);
+      setPasswordErrorMessage(
+        `Password must include ${passwordErrors.join(", ")}.`
+      );
+      hasError = true;
+    }
+
+    if (hasError) {
+      toast.error("Please fix the errors before submitting.");
+      return;
+    }
+
     setLoading(true);
     try {
       await register(username, email, password);
@@ -50,18 +110,6 @@ const Register: React.FC = () => {
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
-  };
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
-  const handleMouseUpPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
   };
 
   return (
@@ -104,6 +152,8 @@ const Register: React.FC = () => {
                   variant="outlined"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  error={usernameError}
+                  helperText={usernameError ? "Username is required." : ""}
                 />
                 <TextField
                   fullWidth
@@ -112,6 +162,8 @@ const Register: React.FC = () => {
                   variant="outlined"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  error={emailError}
+                  helperText={emailError ? "Enter a valid email address." : ""}
                 />
                 <FormControl sx={{ width: "100%" }} variant="outlined">
                   <InputLabel htmlFor="outlined-adornment-password">
@@ -122,6 +174,7 @@ const Register: React.FC = () => {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    error={passwordError}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
@@ -131,8 +184,6 @@ const Register: React.FC = () => {
                               : "display the password"
                           }
                           onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          onMouseUp={handleMouseUpPassword}
                           edge="end"
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -141,6 +192,11 @@ const Register: React.FC = () => {
                     }
                     label="Password"
                   />
+                  {passwordError && (
+                    <p className="text-red-600 text-sm mt-1">
+                      {passwordErrorMessage}
+                    </p>
+                  )}
                 </FormControl>
               </div>
               <div className="mt-10">
@@ -165,19 +221,12 @@ const Register: React.FC = () => {
             </form>
           </div>
 
-          {/* Add Login Redirect Button */}
           <p className="mt-2">
             Already have an account?{" "}
             <a href="/login" className="text-secondary hover:text-primary">
               Login
             </a>
           </p>
-
-          <div className="flex items-center justify-center mt-4 mb-6">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="mx-4 text-zinc-900 font-medium">or</span>
-            <div className="flex-grow border-t border-gray-300"></div>
-          </div>
 
           <button
             onClick={handleGuestLogin}
@@ -188,7 +237,6 @@ const Register: React.FC = () => {
           </button>
         </div>
       </div>
-
       <img
         src="/assets/tasker-duck.svg"
         alt="Tasker Duck"

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { validationResult } from "express-validator";
 import User from "../models/userModel.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import {
@@ -16,11 +17,18 @@ import {
 //Create a new user.
 export const createUser = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { username, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "This account already exists, try logging in instead",
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -41,6 +49,7 @@ export const createUser = async (req, res) => {
       message: "User created successfully",
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
