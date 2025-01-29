@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import apiClient from "../api/apiClient";
-import { handleApiError } from "../utils/errorHandler";
+import { handleError } from "../utils/errorHandler";
 import { toLocalDatetime } from "../utils/toLocatDateTime";
 
 export const useAddTask = (onSuccess: () => void) => {
@@ -29,7 +29,7 @@ export const useAddTask = (onSuccess: () => void) => {
   const resetForm = () => {
     setFormData({
       description: "",
-      date: getDefaultDate(), 
+      date: getDefaultDate(),
       status: "to-do",
     });
   };
@@ -39,12 +39,12 @@ export const useAddTask = (onSuccess: () => void) => {
     setIsSubmitting(true);
 
     try {
-      await apiClient.post("/task", formData); 
+      await apiClient.post("/task", formData);
       toast.success("Task added successfully!");
       resetForm();
-      onSuccess(); 
+      onSuccess();
     } catch (error) {
-      toast.error(handleApiError(error)); 
+      handleError(error);
     } finally {
       setIsSubmitting(false);
     }

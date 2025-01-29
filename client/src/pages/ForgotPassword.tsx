@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { Blobs } from "../components/Blobs";
-import axios from "axios";
+import { handleError } from "../utils/errorHandler";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -22,17 +22,8 @@ const ForgotPasswordPage: React.FC = () => {
     try {
       await forgotPassword(email);
       toast.success("Password reset email sent successfully.");
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.message ||
-            "Failed to send password reset email. Please check your credentials."
-        );
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
+    } catch (error) {
+      handleError(error);
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import apiClient from "../api/apiClient";
+import { handleError } from "../utils/errorHandler";
 
 export const useDeleteTask = (onSuccess: () => void) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -13,11 +13,7 @@ export const useDeleteTask = (onSuccess: () => void) => {
       toast.success("Task deleted successfully!");
       onSuccess(); 
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data.message || "Failed to delete task.");
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      handleError(error);
     } finally {
       setIsDeleting(false);
     }

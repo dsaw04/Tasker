@@ -6,7 +6,7 @@ import { Blobs } from "../components/Blobs";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, InputAdornment } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { handleError } from "../utils/errorHandler";
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState("");
@@ -43,16 +43,8 @@ const ResetPassword: React.FC = () => {
       await resetPassword(token, password);
       toast.success("Password reset successful! You can now log in.");
       navigate("/login");
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.message || "Failed to reset password"
-        );
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
+    } catch (error) {
+      handleError(error);
     } finally {
       setIsLoading(false);
     }

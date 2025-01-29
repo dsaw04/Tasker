@@ -107,7 +107,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Email verification failed:", errorMessage);
         throw new Error(errorMessage);
       } else {
-        console.error("An unexpected error occurred:", error);
         throw new Error("An unexpected error occurred. Please try again.");
       }
     }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import { TaskType } from "../types/TaskType";
 import { TaskStatus } from "../types/TaskType";
 import apiClient from "../api/apiClient";
+import { handleError } from "../utils/errorHandler";
 
 
 const toLocalDatetime = (date: Date): string =>
@@ -61,11 +61,7 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
       toast.success("Task updated successfully!");
       onSuccess();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data.message || "Failed to update task.");
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      handleError(error);
     } finally {
       setIsSubmitting(false);
     }

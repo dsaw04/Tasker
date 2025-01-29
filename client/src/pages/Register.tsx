@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
 import { Blobs } from "../components/Blobs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { handleError } from "../utils/errorHandler";
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -32,19 +32,7 @@ const Register: React.FC = () => {
       await register(username, email, password);
       navigate("/verify", { state: { fromRegister: true } });
     } catch (error) {
-      if (error instanceof AxiosError) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          toast.error(error.response.data.message);
-        } else {
-          toast.error("An unexpected error occurred. Please try again.");
-        }
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -56,11 +44,7 @@ const Register: React.FC = () => {
       navigate("/");
       toast.success("Logged in as a guest!");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error("Failed to log in as a guest. Please try again.");
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      handleError(error);
     }
   };
 

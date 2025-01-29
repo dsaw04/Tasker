@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
 import { Blobs } from "../components/Blobs";
+import { handleError } from "../utils/errorHandler";
 
 const VerificationPage: React.FC = () => {
   const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
@@ -57,11 +58,7 @@ const VerificationPage: React.FC = () => {
       toast.success("Email verified successfully");
       navigate("/login");
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred");
-      }
+     handleError(error);
     } finally {
       setIsLoading(false);
     }

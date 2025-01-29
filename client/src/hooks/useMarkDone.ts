@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import { handleError } from "../utils/errorHandler";
 import { toast } from "react-hot-toast";
 import apiClient from "../api/apiClient";
 
@@ -13,13 +13,7 @@ export const useMarkDone = (onSuccess: () => void) => {
       toast.success("Task marked as done successfully!");
       onSuccess();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data.message || "Failed to mark task as done."
-        );
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      handleError(error);
     } finally {
       setIsMarking(false);
     }
