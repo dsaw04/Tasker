@@ -36,7 +36,6 @@ export const enforceGuestLimit = (action) => {
 
       next();
     } catch (err) {
-      console.error("Error in guest limit middleware:", err.message);
       res.status(500).json({
         success: false,
         message: "Server error occurred.",

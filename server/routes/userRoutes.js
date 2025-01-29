@@ -12,26 +12,25 @@ import {
   resetPassword,
 } from "../controllers/userController.js";
 import passport from "../auth/passport.js";
-import rateLimit from "express-rate-limit";
+import {
+  registerRateLimiter,
+  loginRateLimiter,
+  emailRateLimiter,
+  guestRateLimiter,
+} from "../utils/rateLimiter.js";
 
 const router = express.Router();
 
-const resendRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 3,
-  message: "Too many resend attempts. Please try again later.",
-});
-
 router.get("/streak", getStreak);
-router.post("/register", createUser);
-router.post("/login", loginUser);
+router.post("/register", registerRateLimiter, createUser);
+router.post("/login", loginRateLimiter, loginUser);
 router.post("/refresh", refreshToken);
-router.post("/verify", verifyEmail);
-router.post("/resend", resendRateLimiter, resendVerificationEmail);
-router.post("/guest", createGuest);
+router.post("/verify", emailRateLimiter, verifyEmail);
+router.post("/resend", emailRateLimiter, resendVerificationEmail);
+router.post("/guest", guestRateLimiter, createGuest);
 router.delete("/logout", logoutUser);
-router.post("/forgot-password", forgotPassword);
-router.put("/reset-password", resetPassword);
+router.post("/forgot-password", emailRateLimiter, forgotPassword);
+router.put("/reset-password", emailRateLimiter, resetPassword);
 
 router.get(
   "/google",

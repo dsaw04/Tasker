@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { getTasksForToday } from "../utils/taskService.js";
+import { getTasksForToday } from "../utils/taskUtils.js";
 import { publishEmailTask } from "../queues/emailPublisher.js";
 
 export const scheduleDailyTaskEmail = () => {

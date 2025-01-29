@@ -13,11 +13,11 @@ import {
   generateGuestRefreshToken,
 } from "../utils/tokenUtils.js";
 
+//Create a new user.
 export const createUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
@@ -35,55 +35,37 @@ export const createUser = async (req, res) => {
       verificationTokenExpires: Date.now() + 10 * 60 * 1000, //10 mins
     });
     await newUser.save();
-
-    const accessToken = generateAccessToken(newUser._id);
-    const refreshToken = generateRefreshToken(newUser._id);
-
-    newUser.refreshToken = refreshToken;
-    await newUser.save();
-
     await sendVerificationEmail(email, verificationToken, username);
 
     res.status(201).json({
       message: "User created successfully",
     });
   } catch (error) {
-    console.error("Error creating user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+//Allow users to resend a verification email if their code has expired/inaccessible.
 export const resendVerificationEmail = async (req, res) => {
   try {
-    const { email }= req.body;
+    const { email } = req.body;
 
-    // Find the user by email
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if (user.isVerified) {
-      return res.status(400).json({ error: "Email is already verified" });
-    }
-
-    // Generate a new verification token
     const verificationToken = generateVerificationCode();
     user.verificationToken = verificationToken;
     user.verificationTokenExpires = Date.now() + 10 * 60 * 1000;
     await user.save();
-
-    // Send the verification email
     await sendVerificationEmail(email, verificationToken, user.username);
 
     res.status(200).json({ message: "Verification email resent successfully" });
   } catch (error) {
-    console.error("Error resending verification email:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+//Verify a given email from OTP.
 export const verifyEmail = async (req, res) => {
   const { code } = req.body;
   try {
@@ -102,13 +84,12 @@ export const verifyEmail = async (req, res) => {
     user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
     await user.save();
-    res.clearCookie("email");
     return res.status(200).json({ message: "Email verified successfully" });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
+//Login user.
 export const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -155,15 +136,14 @@ export const loginUser = async (req, res) => {
       sameSite: "strict",
     });
 
-    return res.status(200).json({ message: "Login successful!", accessToken });
+    return res.status(200).json({ message: "Login successful!" });
   } catch (error) {
-    console.error("Login error:", error);
     res
       .status(500)
       .json({ error: "Internal server error. Please try again later." });
   }
 };
-
+//Grant another refresh token.
 export const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
@@ -182,8 +162,6 @@ export const refreshToken = async (req, res) => {
     }
 
     const newAccessToken = generateAccessToken(user._id);
-
-    // Rotate the refresh token
     const newRefreshToken = generateRefreshToken(user._id);
     user.refreshToken = newRefreshToken;
     if (user.role === "guest") {
@@ -205,16 +183,15 @@ export const refreshToken = async (req, res) => {
       sameSite: "strict",
     });
 
-    res.status(200).json({ accessToken: newAccessToken });
+    res.status(200).json({ message: "Token Refreshed!" });
   } catch (error) {
-    console.error("Error during token refresh:", error);
     if (error.name === "TokenExpiredError") {
       return res.status(403).json({ error: "Refresh token expired" });
     }
     res.status(403).json({ error: "Invalid refresh token" });
   }
 };
-
+//Logout user.
 export const logoutUser = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
@@ -225,14 +202,13 @@ export const logoutUser = async (req, res) => {
   try {
     const user = await User.findOneAndUpdate(
       { refreshToken },
-      { refreshToken: null } // Clear refresh token in DB
+      { refreshToken: null }
     );
 
     if (!user) {
       return res.status(400).json({ error: "Invalid refresh token" });
     }
 
-    // Clear cookies
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
     res.status(200).json({ message: "Logout successful" });
@@ -241,15 +217,13 @@ export const logoutUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+//Create a guest user account.
 export const createGuest = async (req, res) => {
   try {
     const randomSequence = crypto.randomBytes(4).toString("hex");
     const guestUsername = `Guest_${randomSequence}`;
-
     const uniqueGuestEmail = `guest_${Date.now()}@example.com`;
 
-    // Create a new guest user
     const guestUser = new User({
       username: guestUsername,
       email: uniqueGuestEmail,
@@ -277,21 +251,12 @@ export const createGuest = async (req, res) => {
       sameSite: "strict",
     });
 
-    res.status(201).json({
-      message: "Guest user created successfully",
-      token,
-      user: {
-        id: guestUser._id,
-        username: guestUser.username,
-        role: guestUser.role,
-      },
-    });
+    res.status(201).json({ message: "Guest user created successfully" });
   } catch (error) {
-    console.error("Error creating guest user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+//Retrieve a user streak.
 export const getStreak = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -324,7 +289,7 @@ export const getStreak = async (req, res) => {
     });
   }
 };
-
+//Method to send users a link to reset password.
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -343,11 +308,10 @@ export const forgotPassword = async (req, res) => {
     await sendResetPasswordEmail(email, resetLink, user.username);
     return res.status(200).json({ message: "Password reset email sent." });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: "Internal Server Error." });
   }
 };
-
+//Method to reset and update password for a given user.
 export const resetPassword = async (req, res) => {
   const { token, password } = req.body;
   try {
@@ -367,7 +331,6 @@ export const resetPassword = async (req, res) => {
 
     res.status(200).json({ message: "Password reset successfully." });
   } catch (error) {
-    console.error(error);
     if (error.name === "TokenExpiredError") {
       res.status(400).json({ error: "Token has expired." });
     }

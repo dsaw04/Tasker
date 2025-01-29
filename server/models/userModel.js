@@ -58,6 +58,7 @@ const userSchema = new mongoose.Schema({
   },
   verificationToken: {
     type: String,
+    index: true,
   },
   verificationTokenExpires: {
     type: Date,

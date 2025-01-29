@@ -6,10 +6,7 @@ import {
   dailyTasksTemplate,
 } from "./emailTemplate.js";
 
-// Load environment variables
 dotenv.config();
-
-// Set your SendGrid API Key
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 
 export async function sendVerificationEmail(
