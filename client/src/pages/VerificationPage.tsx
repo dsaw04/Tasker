@@ -3,16 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
 import { Blobs } from "../components/Blobs";
 
 const VerificationPage: React.FC = () => {
   const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
-  const { verifyEmail, resendVerificationEmail } = useContext(AuthContext);
+  const { verifyEmail } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
 
   const handleChange = (index: number, value: string) => {
     const newCode = [...code];
@@ -66,32 +64,6 @@ const VerificationPage: React.FC = () => {
       }
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    setIsResending(true);
-    try {
-      await resendVerificationEmail();
-      toast.success("Verification code resent successfully.");
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 429) {
-          toast.error(
-            error.response.data?.error ||
-              "Too many attempts. Please try again later."
-          );
-        } else {
-          toast.error(
-            error.response?.data?.error ||
-              "Failed to resend verification code. Please try again."
-          );
-        }
-      } else if (error instanceof Error) {
-        toast.error("Too many attempts. Please try again later.");
-      }
-    } finally {
-      setIsResending(false);
     }
   };
 
@@ -149,11 +121,9 @@ const VerificationPage: React.FC = () => {
             <p className="text-center text-zinc-700 mt-4">
               Didn’t receive a code?{" "}
               <button
-                onClick={handleResendCode}
-                disabled={isResending}
+                onClick={() => navigate("/resend-verification")}
                 className="text-secondary hover:text-primary focus:outline-none disabled:opacity-50"
               >
-                {isResending ? "Resending..." : "Resend Code"}
               </button>
             </p>
           </motion.div>

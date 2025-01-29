@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    index: true,
   },
   email: {
     type: String,
@@ -15,6 +16,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     match: [/.+@.+\..+/, "Please enter a valid email address"],
+    index: true,
   },
   password: {
     type: String,
@@ -25,7 +27,7 @@ const userSchema = new mongoose.Schema({
   googleId: {
     type: String,
   },
-  githubId:{
+  githubId: {
     type: String,
   },
   role: {
@@ -70,18 +72,6 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-});
-
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password") || this.role === "guest") return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (err) {
-    next(err);
-  }
 });
 
 const User = mongoose.model("User", userSchema);

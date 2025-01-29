@@ -30,7 +30,7 @@ const Register: React.FC = () => {
     setLoading(true); // Disable the button while registering
     try {
       await register(username, email, password);
-      navigate("/verify"); // Navigate to the verification page after successful registration
+      navigate("/verify", { state: { fromRegister: true } }); // Navigate to the verification page after successful registration
     } catch (error) {
       if (error instanceof AxiosError) {
         if (

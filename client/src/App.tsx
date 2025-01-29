@@ -8,6 +8,8 @@ import VerificationPage from "./pages/VerificationPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { NotFound } from "./pages/NotFound";
+import VerificationRoute from "./routes/VerificationRoute";
+import ResendVerificationPage from "./pages/ResendVerificationPage";
 
 const App: React.FC = () => {
   return (
@@ -18,13 +20,17 @@ const App: React.FC = () => {
         <Route
           path="/verify"
           element={
-            <ProtectedRoute>
+            <VerificationRoute>
               <VerificationPage />
-            </ProtectedRoute>
+            </VerificationRoute>
           }
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/resend-verification"
+          element={<ResendVerificationPage />}
+        />
         <Route
           path="/"
           element={

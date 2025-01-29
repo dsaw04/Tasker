@@ -7,22 +7,11 @@ import {
   sendResetPasswordEmail,
 } from "../sendgrid/sendgrid.config.js";
 import crypto from "crypto";
-
-const generateAccessToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "15m" });
-};
-
-const generateRefreshToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_REFRESH_TOKEN, {
-    expiresIn: "7d",
-  });
-};
-
-const generateGuestRefreshToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_REFRESH_TOKEN, {
-    expiresIn: "30m",
-  });
-};
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  generateGuestRefreshToken,
+} from "../utils/tokenUtils.js";
 
 export const createUser = async (req, res) => {
   try {
@@ -34,52 +23,29 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
     const verificationToken = generateVerificationCode();
 
     const newUser = new User({
       username,
       email,
-      password: password,
+      password: hashedPassword,
       verificationToken,
-      verificationTokenExpires: Date.now() + 10 * 60 * 1000,
+      verificationTokenExpires: Date.now() + 10 * 60 * 1000, //10 mins
     });
     await newUser.save();
 
-    // Generate tokens
     const accessToken = generateAccessToken(newUser._id);
     const refreshToken = generateRefreshToken(newUser._id);
 
-    // Save the refresh token in the user document
     newUser.refreshToken = refreshToken;
     await newUser.save();
 
-    // Set cookies for tokens
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-
     await sendVerificationEmail(email, verificationToken, username);
-
-    res.cookie("email", email, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
 
     res.status(201).json({
       message: "User created successfully",
-      user: {
-        ...newUser._doc,
-        password: undefined,
-      },
     });
   } catch (error) {
     console.error("Error creating user:", error);
@@ -89,7 +55,7 @@ export const createUser = async (req, res) => {
 
 export const resendVerificationEmail = async (req, res) => {
   try {
-    const email = req.cookies.email;
+    const { email }= req.body;
 
     // Find the user by email
     const user = await User.findOne({ email });
@@ -393,7 +359,9 @@ export const resetPassword = async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    user.password = password;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    user.password = hashedPassword;
 
     await user.save();
 

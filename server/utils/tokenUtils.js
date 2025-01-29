@@ -9,3 +9,9 @@ export const generateRefreshToken = (userId) => {
     expiresIn: "7d",
   });
 };
+
+export const generateGuestRefreshToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_REFRESH_TOKEN, {
+    expiresIn: "30m",
+  });
+};

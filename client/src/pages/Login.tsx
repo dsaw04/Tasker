@@ -55,12 +55,31 @@ const Login: React.FC = () => {
       navigate("/");
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          toast.error(error.response.data.error);
+        if (error.response) {
+          if (error.response.status === 403) {
+            toast.error(
+              <div className="flex items-center">
+                <span>
+                  <strong>Verification Required:</strong> Please verify your
+                  account.{" "}
+                  <a
+                    href="/verify"
+                    className="text-blue-500 underline"
+                    onClick={() =>
+                      navigate("/verify", { state: { fromError: true } })
+                    }
+                  >
+                    Click here
+                  </a>{" "}
+                  to proceed.
+                </span>
+              </div>
+            );
+          } else if (error.response.data && error.response.data.error) {
+            toast.error(error.response.data.error);
+          } else {
+            toast.error("An unexpected error occurred. Please try again.");
+          }
         } else {
           toast.error("An unexpected error occurred. Please try again.");
         }

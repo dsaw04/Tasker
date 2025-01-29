@@ -1,16 +1,13 @@
 import Task from "../models/taskModel.js";
 import User from "../models/userModel.js";
 import mongoose from "mongoose";
+import {
+  handleOverdueTasks,
+  isDuplicateTask,
+  isTodayOrFuture,
+} from "../utils/taskUtils.js";
 
-/**
- * Checks whether a date is either today or in the future.
- * @param {Date} date
- */
-const isTodayOrFuture = (date) => {
-  const currentDate = new Date();
-  return new Date(date).getTime() >= currentDate.getTime();
-};
-
+//Create a new task for a given user. Ensures the task is a valid task for the future.
 export const create = async (req, res) => {
   try {
     const { description, date, status } = req.body;
@@ -22,7 +19,6 @@ export const create = async (req, res) => {
       });
     }
 
-    // Check if the date is today or in the future
     if (!isTodayOrFuture(date)) {
       return res.status(400).json({
         success: false,
@@ -30,61 +26,25 @@ export const create = async (req, res) => {
       });
     }
 
-    // Get the user from the request (assumes middleware adds `req.user`)
-    const userId = req.user;
-    const userObject = await User.findById(userId);
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated.",
-      });
-    }
-
-    // Check for duplicate tasks for the same user
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const taskExist = await Task.findOne({
-      description,
-      date: { $gte: startOfDay, $lte: endOfDay },
-      user: userId, // Ensure it's scoped to the current user
-    });
-
-    if (taskExist) {
+    if (await isDuplicateTask(req.user, description, date)) {
       return res.status(400).json({
         success: false,
         message: "Duplicate task exists.",
       });
     }
 
-    if (userObject.role === "guest") {
-      const taskCount = await Task.countDocuments({ user: userId });
-
-      if (taskCount >= userObject.guestTaskLimit) {
-        return res.status(403).json({
-          success: false,
-          message: "Guest users can only add up to 5 tasks.",
-        });
-      }
-    }
-
     const newTask = new Task({
       description,
       date,
       status,
-      user: userId,
+      user: req.user,
     });
 
-    const savedTask = await newTask.save();
+    await newTask.save();
 
     res.status(201).json({
       success: true,
       message: "Task created successfully.",
-      data: savedTask,
     });
   } catch (err) {
     console.error("Error creating task:", err.message);
@@ -96,26 +56,10 @@ export const create = async (req, res) => {
   }
 };
 
+//Fetch all of a given user's tasks.
 export const getAllTasks = async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized access.",
-      });
-    }
-
-    const now = new Date();
-
-    const overdueTasks = await Task.updateMany(
-      { user: req.user, date: { $lt: now } },
-      { $set: { isOverdue: true, status: "overdue" } }
-    );
-
-    if (overdueTasks.modifiedCount > 0) {
-      await User.findByIdAndUpdate(req.user, { $set: { streak: 0 } });
-    }
-
+    await handleOverdueTasks(req.user);
     const tasks = await Task.find({ user: req.user });
 
     if (!tasks.length) {
@@ -141,6 +85,7 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
+//Search for tasks based on the users query. Returns an empty array if no matches were found.
 export const searchTasks = async (req, res) => {
   try {
     const { description } = req.query;
@@ -148,8 +93,8 @@ export const searchTasks = async (req, res) => {
     const searchCriteria = { user: req.user };
     if (description) {
       searchCriteria.description = {
-        $regex: `^${description}`, // Match only descriptions starting with the query
-        $options: "i", // Case-insensitive search
+        $regex: `^${description}`,
+        $options: "i",
       };
     }
 
@@ -159,7 +104,7 @@ export const searchTasks = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "No tasks match the criteria.",
-        data: [], // Return an empty array instead of 404
+        data: [],
       });
     }
 
@@ -178,12 +123,13 @@ export const searchTasks = async (req, res) => {
   }
 };
 
+//Update a given user task. Validates any modified tasks (i.e. ignores if they were overdue in the past).
 export const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
 
-    // Validate task ID
+    console.log(updates);
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -191,46 +137,25 @@ export const updateTask = async (req, res) => {
       });
     }
 
-    // Find the task scoped to the authenticated user
     const task = await Task.findOne({ _id: id, user: req.user });
 
     if (!task) {
       return res.status(404).json({
         success: false,
-        message: "Task not found or unauthorized access.",
+        message: "Task not found.",
       });
     }
 
-    const now = new Date();
-
-    if (updates.date && new Date(updates.date) > now) {
+    if (updates.date && new Date(updates.date) > new Date()) {
       task.isOverdue = false;
     }
 
-    // Enforce guest edit limit
-    const userObject = await User.findById(req.user);
-
-    if (userObject.role === "guest") {
-      if (userObject.guestEditLimit <= 0) {
-        return res.status(403).json({
-          success: false,
-          message: "Guest users can only edit/delete tasks 10 times.",
-        });
-      }
-
-      // Deduct one from the edit/delete limit
-      userObject.guestEditLimit -= 1;
-      await userObject.save();
-    }
-
-    // Apply updates to the task
     Object.assign(task, updates);
-    const updatedTask = await task.save();
+    await task.save();
 
     res.status(200).json({
       success: true,
       message: "Task updated successfully.",
-      data: updatedTask,
     });
   } catch (err) {
     console.error("Error updating task:", err.message);
@@ -242,11 +167,11 @@ export const updateTask = async (req, res) => {
   }
 };
 
+//Delete a given user task.
 export const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate task ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -254,7 +179,6 @@ export const deleteTask = async (req, res) => {
       });
     }
 
-    // Find the task scoped to the authenticated user
     const task = await Task.findOne({ _id: id, user: req.user });
 
     if (!task) {
@@ -264,22 +188,6 @@ export const deleteTask = async (req, res) => {
       });
     }
 
-    // Enforce guest delete limit
-    const userObject = await User.findById(req.user);
-    if (userObject.role === "guest") {
-      if (userObject.guestEditLimit <= 0) {
-        return res.status(403).json({
-          success: false,
-          message: "Guest users can only edit/delete tasks 10 times.",
-        });
-      }
-
-      // Deduct one from the edit/delete limit
-      userObject.guestEditLimit -= 1;
-      await userObject.save();
-    }
-
-    // Delete the task
     await task.deleteOne();
 
     res.status(200).json({
@@ -297,6 +205,7 @@ export const deleteTask = async (req, res) => {
   }
 };
 
+//Marks a task as done.
 export const markDone = async (req, res) => {
   try {
     const { id } = req.params;
@@ -317,17 +226,8 @@ export const markDone = async (req, res) => {
       });
     }
 
-    // Find the authenticated user
     const userObject = await User.findById(req.user);
 
-    if (!userObject) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found.",
-      });
-    }
-
-    // Increment streak and delete task
     if (!task.isOverdue) {
       userObject.streak += 1;
     }

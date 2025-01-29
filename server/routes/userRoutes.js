@@ -37,11 +37,12 @@ router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
+
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
-    const { user, customAccessToken, refreshToken } = req.user;
+    const { customAccessToken, refreshToken } = req.user;
 
     res.cookie("accessToken", customAccessToken, {
       httpOnly: true,
@@ -68,7 +69,7 @@ router.get(
   "/github/callback",
   passport.authenticate("github", { session: false }),
   (req, res) => {
-    const { user, customAccessToken, refreshToken } = req.user;
+    const { customAccessToken, refreshToken } = req.user;
 
     res.cookie("accessToken", customAccessToken, {
       httpOnly: true,

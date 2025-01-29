@@ -16,7 +16,7 @@ export interface AuthContextType {
   ) => Promise<void>;
   verifyEmail: (code: string) => Promise<string>;
   getAccessToken: () => string | null;
-  resendVerificationEmail: () => Promise<void | string>;
+  resendVerificationEmail: (email: string) => Promise<void | string>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
 }
@@ -136,11 +136,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const resendVerificationEmail = async (): Promise<void | string> => {
+  const resendVerificationEmail = async (email: string): Promise<void | string> => {
     try {
       const response = await apiClient.post(
         "/users/resend",
-        {},
+        { email },
         { withCredentials: true }
       );
 

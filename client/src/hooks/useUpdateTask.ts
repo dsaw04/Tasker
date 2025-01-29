@@ -57,6 +57,7 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
         ...formData,
         date: new Date(formData.date),
       });
+      console.log(formData);
       toast.success("Task updated successfully!");
       onSuccess(); // Trigger a refetch
     } catch (error) {
