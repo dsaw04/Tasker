@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 type DateSliderProps = {
-  taskDates: string[]; // Array of dates with tasks, in "yyyy-MM-dd" format
+  taskDates: string[];
   onDateSelect: (date: string | null) => void;
   selectedDate: string | null;
 };
@@ -19,7 +19,6 @@ const DateSlider: React.FC<DateSliderProps> = ({
 }) => {
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  // Generate dates: current week + 3 weeks in advance
   const weeks = useMemo(() => {
     const startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
     return Array.from({ length: 4 }).map((_, weekIndex) => {
@@ -29,24 +28,22 @@ const DateSlider: React.FC<DateSliderProps> = ({
     });
   }, []);
 
-  // Handle scrolling via buttons
   const scroll = (direction: "left" | "right") => {
     if (sliderRef.current) {
-      const scrollAmount = sliderRef.current.offsetWidth; // Scroll by the width of the slider
+      const scrollAmount = sliderRef.current.offsetWidth;
       sliderRef.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth", // Smooth scrolling
+        behavior: "smooth",
       });
     }
   };
 
-  // Handle date clicks
   const handleDateClick = (date: Date) => {
     const formattedDate = format(date, "yyyy-MM-dd");
     if (selectedDate === formattedDate) {
-      onDateSelect(null); // Unselect if clicked again
+      onDateSelect(null); 
     } else {
-      onDateSelect(formattedDate); // Set selected date
+      onDateSelect(formattedDate);
     }
   };
 

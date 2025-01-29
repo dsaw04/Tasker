@@ -4,13 +4,13 @@ import { TaskType } from "../types/TaskType";
 import apiClient from "../api/apiClient";
 
 export const useSearchTask = () => {
-  const [results, setResults] = useState<TaskType[]>([]); // Specify TaskType for results
+  const [results, setResults] = useState<TaskType[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchError, setSearchError] = useState<number | null>(null);
 
   const searchTasks = useCallback(async (query: string) => {
     setLoading(true);
-    setSearchError(null); // Clear any previous errors
+    setSearchError(null);
 
     try {
       const response = await apiClient.get("/search", {
@@ -19,10 +19,9 @@ export const useSearchTask = () => {
 
       const { data } = response.data;
 
-      // Transform tasks if data exists
       const transformedResults = data.map((task: TaskType) => ({
         ...task,
-        date: new Date(task.date), // Ensure the date is a Date object
+        date: new Date(task.date),
       }));
 
       setResults(transformedResults);
@@ -39,8 +38,8 @@ export const useSearchTask = () => {
   }, []);
 
   const resetResults = useCallback(() => {
-    setResults([]); // Clear the search results
-    setSearchError(null); // Clear the error when resetting
+    setResults([]); 
+    setSearchError(null);
   }, []);
 
   return { results, searchTasks, searchError, resetResults, loading };

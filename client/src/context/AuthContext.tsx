@@ -33,7 +33,7 @@ export const AuthContext = createContext<AuthContextType>({
   resendVerificationEmail: async () => {},
   loginAsGuest: async () => {},
   forgotPassword: async () => {},
-  resetPassword: async () => {}, // New method
+  resetPassword: async () => {},
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
@@ -43,17 +43,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [accessToken, setAccessTokenState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Function to set the access token and update global state
   const updateAccessToken = (token: string | null) => {
     setAccessTokenState(token);
     setAccessToken(token);
   };
 
-  let count = 0;
   useEffect(() => {
     const checkAuth = async () => {
-      count++;
-      console.log(count);
       try {
         const response = await axios.post(
           "http://localhost:8000/api/users/refresh",

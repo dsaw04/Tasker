@@ -7,7 +7,7 @@ interface UpdateTaskModalProps {
   isOpen: boolean;
   task: TaskType;
   onClose: () => void;
-  onSuccess: () => void; // Callback to refresh the tasks
+  onSuccess: () => void;
 }
 
 export default function UpdateTaskModal({
@@ -18,12 +18,12 @@ export default function UpdateTaskModal({
 }: UpdateTaskModalProps) {
   const { formData, isSubmitting, handleChange, handleSubmit, resetForm } =
     useUpdateTask(task, () => {
-      onSuccess(); // Refresh the task list
-      handleClose(); // Close the modal when update is successful
+      onSuccess(); 
+      handleClose();
     });
 
   const handleClose = () => {
-    resetForm(); // Reset form state on close
+    resetForm();
     onClose();
   };
 

@@ -7,13 +7,13 @@ import { toLocalDatetime } from "../utils/toLocatDateTime";
 export const useAddTask = (onSuccess: () => void) => {
   const getDefaultDate = () => {
     const current = new Date();
-    current.setMinutes(current.getMinutes() + 1); // Add 1 minute to avoid past time
-    return toLocalDatetime(current); // Convert to local datetime format
+    current.setMinutes(current.getMinutes() + 1);
+    return toLocalDatetime(current);
   };
 
   const [formData, setFormData] = useState({
     description: "",
-    date: getDefaultDate(), // Default to current local datetime
+    date: getDefaultDate(),
     status: "to-do",
   });
 

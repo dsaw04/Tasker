@@ -2,9 +2,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSortDown } from "@fortawesome/free-solid-svg-icons";
 
 interface HeaderProps {
-  sortOption: string; // Current sorting option
-  setSortOption: (sortOption: string) => void; // Callback to update sorting
-  onAddTask: () => void; // Callback to open "Add Task" modal
+  sortOption: string; 
+  setSortOption: (sortOption: string) => void; 
+  onAddTask: () => void;
 }
 
 function Header({ sortOption, setSortOption, onAddTask }: HeaderProps) {

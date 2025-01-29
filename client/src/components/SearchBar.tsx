@@ -2,12 +2,12 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface SearchBarProps {
-  onSearch: (query: string) => void; // Callback for search
+  onSearch: (query: string) => void; 
 }
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch(e.target.value); // Call the onSearch callback with input value
+    onSearch(e.target.value);
   };
 
   return (

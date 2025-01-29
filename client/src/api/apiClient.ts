@@ -6,12 +6,10 @@ export const setAccessToken = (token: string | null) => {
   accessToken = token;
 };
 
-// Create an Axios instance
 const apiClient = axios.create({
-  baseURL: "http://localhost:8000/api", // Base API URL
+  baseURL: "http://localhost:8000/api",
 });
 
-// Add a request interceptor to include the Authorization header
 apiClient.interceptors.request.use(
   (config) => {
     if (accessToken) {
@@ -23,7 +21,6 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Add a response interceptor for token refreshing
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -40,14 +37,13 @@ apiClient.interceptors.response.use(
         );
 
         const newAccessToken = refreshResponse.data.accessToken;
-        setAccessToken(newAccessToken); // Update the token globally
+        setAccessToken(newAccessToken);
 
-        // Retry the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-        window.location.href = "/login"; // Redirect to login
+        window.location.href = "/login"; 
         return Promise.reject(refreshError);
       }
     }

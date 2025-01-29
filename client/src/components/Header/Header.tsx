@@ -5,7 +5,7 @@ interface HeaderProps {
   streak: number | null;
   loading: boolean;
   error: string | null;
-  refetchStreak: () => void; // New prop to refresh streak
+  refetchStreak: () => void;
 }
 
 function Header({ streak, loading, error, refetchStreak }: HeaderProps) {

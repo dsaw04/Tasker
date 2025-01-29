@@ -27,10 +27,10 @@ const Register: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); // Disable the button while registering
+    setLoading(true);
     try {
       await register(username, email, password);
-      navigate("/verify", { state: { fromRegister: true } }); // Navigate to the verification page after successful registration
+      navigate("/verify", { state: { fromRegister: true } });
     } catch (error) {
       if (error instanceof AxiosError) {
         if (
@@ -46,7 +46,7 @@ const Register: React.FC = () => {
         toast.error("An unexpected error occurred.");
       }
     } finally {
-      setLoading(false); // Re-enable the button
+      setLoading(false);
     }
   };
 

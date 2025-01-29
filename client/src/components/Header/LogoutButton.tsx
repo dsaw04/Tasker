@@ -2,14 +2,16 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const LogoutButton = () => {
   const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout(); // Call the logout function from AuthContext
-      window.location.href = "/login"; // Redirect to login page
+      await logout();
+      navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error);
     }

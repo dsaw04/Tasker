@@ -20,18 +20,13 @@ export default function TaskList({
   onUpdate,
   onMarkDone,
 }: TaskListProps) {
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const tasksPerPage = 4; // Number of tasks per page
-
-  // Calculate indices for slicing the tasks array
+  const [currentPage, setCurrentPage] = useState(1); 
+  const tasksPerPage = 5;
   const startIndex = (currentPage - 1) * tasksPerPage;
   const endIndex = startIndex + tasksPerPage;
   const currentTasks = tasks.slice(startIndex, endIndex);
-
-  // Calculate total pages
   const totalPages = Math.ceil(tasks.length / tasksPerPage);
 
-  // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -59,11 +54,9 @@ export default function TaskList({
         ))}
       </div>
 
-      {/* DaisyUI Pagination */}
       <div className="fixed bottom-0 left-0 w-full bg-white py-4 shadow-md">
         <div className="flex justify-center items-center">
           <div className="join">
-            {/* Previous Button */}
             <button
               className={`join-item btn ${
                 currentPage === 1 ? "btn-disabled" : ""

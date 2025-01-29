@@ -15,6 +15,6 @@ export function sortTasks(tasks: TaskType[], sortOption: string): TaskType[] {
     if (sortOption === "alphabetical") {
       return a.description.localeCompare(b.description);
     }
-    return 0; // Default case
+    return 0;
   });
 }

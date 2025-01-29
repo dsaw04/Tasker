@@ -21,7 +21,7 @@ interface TaskProps {
     taskDate: Date,
     taskStatus: TaskStatus
   ) => void;
-  onMarkDone: (taskId: string, taskName: string) => void; // Added onMarkDone prop
+  onMarkDone: (taskId: string, taskName: string) => void;
 }
 
 export default function Task({
@@ -36,9 +36,9 @@ export default function Task({
 }: TaskProps) {
   const formatDate = (date: Date | string) => {
     try {
-      const parsedDate = new Date(date); // Ensure `date` is converted to a Date object
+      const parsedDate = new Date(date);
       if (isNaN(parsedDate.getTime())) {
-        throw new Error("Invalid date"); // Throw error if `parsedDate` is invalid
+        throw new Error("Invalid date");
       }
       const options: Intl.DateTimeFormatOptions = {
         weekday: "long",

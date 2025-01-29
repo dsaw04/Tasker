@@ -5,7 +5,7 @@ import { TaskType } from "../types/TaskType";
 import { TaskStatus } from "../types/TaskType";
 import apiClient from "../api/apiClient";
 
-// Utility to normalize datetime to local timezone
+
 const toLocalDatetime = (date: Date): string =>
   new Date(date.getTime() - date.getTimezoneOffset() * 60000)
     .toISOString()
@@ -14,18 +14,18 @@ const toLocalDatetime = (date: Date): string =>
 export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
   const [formData, setFormData] = useState({
     description: "",
-    date: toLocalDatetime(new Date()), // Initialize to local time
+    date: toLocalDatetime(new Date()),
     status: "to-do" as TaskStatus,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Populate form data when task changes
+
   useEffect(() => {
     if (task) {
       setFormData({
         description: task.description,
-        date: toLocalDatetime(new Date(task.date)), // Normalize task date
+        date: toLocalDatetime(new Date(task.date)),
         status: task.status,
       });
     }
@@ -59,7 +59,7 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
       });
       console.log(formData);
       toast.success("Task updated successfully!");
-      onSuccess(); // Trigger a refetch
+      onSuccess();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message || "Failed to update task.");

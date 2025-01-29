@@ -8,8 +8,8 @@ export const useStreak = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStreak = useCallback(async () => {
-    setLoading(true); // Set loading state when refetching
-    setError(null); // Reset error state
+    setLoading(true); 
+    setError(null);
     try {
       const response = await apiClient.get("/users/streak");
       setStreak(response.data.streak);
@@ -30,7 +30,7 @@ export const useStreak = () => {
   }, []);
 
   useEffect(() => {
-    fetchStreak(); // Initial fetch
+    fetchStreak();
   }, [fetchStreak]);
 
   return { streak, loading, error, refetch: fetchStreak };

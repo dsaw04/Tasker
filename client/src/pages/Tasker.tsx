@@ -7,7 +7,7 @@ import Modal from "../components/Modals/Modal";
 import AddTaskModal from "../components/Modals/AddTaskModal";
 import UpdateTaskModal from "../components/Modals/UpdateTaskModal";
 import DeleteTaskModal from "../components/Modals/DeleteTaskModal";
-import MarkDoneModal from "../components/Modals/MarkDoneModal"; // Import MarkDoneModal
+import MarkDoneModal from "../components/Modals/MarkDoneModal";
 import SearchBar from "../components/SearchBar";
 import { useSortTasks } from "../hooks/useSortTasks";
 import SectionHeader from "../components/SectionHeader/SectionHeader";
