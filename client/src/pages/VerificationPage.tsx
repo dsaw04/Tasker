@@ -121,10 +121,13 @@ const VerificationPage: React.FC = () => {
             <p className="text-center text-zinc-700 mt-4">
               Didn’t receive a code?{" "}
               <button
-                onClick={() => navigate("/resend-verification")}
+                onClick={() =>
+                  navigate("/resend-verification", {
+                    state: { fromVerify: true },
+                  })
+                }
                 className="text-secondary hover:text-primary focus:outline-none disabled:opacity-50"
-              >
-              </button>
+              ></button>
             </p>
           </motion.div>
         </div>

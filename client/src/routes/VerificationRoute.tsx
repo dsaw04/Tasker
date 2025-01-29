@@ -8,7 +8,8 @@ const VerificationRoute: React.FC<{ children: React.ReactNode }> = ({
 
   return location.state?.fromRegister ||
     location.state?.fromError ||
-    location.state?.fromResend ? (
+    location.state?.fromResend ||
+    location.state?.fromVerify ? (
     <>{children}</>
   ) : (
     <Navigate to="/login" />

@@ -29,7 +29,11 @@ const App: React.FC = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/resend-verification"
-          element={<ResendVerificationPage />}
+          element={
+            <VerificationRoute>
+              <ResendVerificationPage />
+            </VerificationRoute>
+          }
         />
         <Route
           path="/"
