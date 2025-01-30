@@ -3,7 +3,7 @@ import apiClient from "../api/apiClient";
 import { AxiosError } from "axios";
 
 export const useStreak = () => {
-  const [streak, setStreak] = useState<number | null>(null);
+  const [streak, setStreak] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 

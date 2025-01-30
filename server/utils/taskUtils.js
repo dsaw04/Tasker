@@ -41,19 +41,19 @@ export const isDuplicateTask = async (userId, description, date) => {
  */
 export const handleOverdueTasks = async (userId) => {
   const now = new Date();
-
   const overdueTasks = await Task.updateMany(
     { user: userId, date: { $lt: now }, isOverdue: false },
     { $set: { isOverdue: true } }
   );
 
   if (overdueTasks.modifiedCount > 0) {
-    const userMetrics = await UserMetrics.findOne({ user: userId });
+    const userMetrics = await UserMetrics.findOneAndUpdate(
+      { user: userId },
+      { $set: { streak: 0 } },
+      { new: true }
+    );
 
-    if (userMetrics && userMetrics.streak > 0) {
-      userMetrics.streak = 0;
-      await userMetrics.save();
-
+    if (userMetrics) {
       const cacheKey = `streak:${userId}`;
       await redisClient.set(cacheKey, 0, { EX: 86400 });
     }

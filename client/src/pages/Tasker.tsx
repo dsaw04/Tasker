@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTasks } from "../hooks/useTasks";
 import { useSearchTask } from "../hooks/useSearchTask";
 import { useStreak } from "../hooks/useStreak";
@@ -48,6 +48,10 @@ function Tasker() {
       searchTasks(query);
     }
   };
+
+  useEffect(() => {
+    refetchStreak();
+  }, [tasks, refetchStreak]);
 
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
@@ -128,7 +132,10 @@ function Tasker() {
           {modalContent === "add" && (
             <AddTaskModal
               isOpen={isModalOpen}
-              onSuccess={refetch}
+              onSuccess={() => {
+                refetchStreak();
+                refetch();
+              }}
               onClose={closeModal}
             />
           )}
@@ -138,7 +145,10 @@ function Tasker() {
               taskId={selectedTask._id}
               taskName={selectedTask.description}
               onClose={closeModal}
-              onSuccess={refetch}
+              onSuccess={() => {
+                refetchStreak();
+                refetch();
+              }}
             />
           )}
           {modalContent === "update" && selectedTask && (
@@ -146,7 +156,10 @@ function Tasker() {
               isOpen={isModalOpen}
               task={selectedTask}
               onClose={closeModal}
-              onSuccess={refetch}
+              onSuccess={() => {
+                refetchStreak();
+                refetch();
+              }}
             />
           )}
           {modalContent === "mark-done" && selectedTask && (
@@ -156,8 +169,8 @@ function Tasker() {
               taskName={selectedTask.description}
               onClose={closeModal}
               onSuccess={() => {
-                refetch();
                 refetchStreak();
+                refetch();
               }}
             />
           )}
