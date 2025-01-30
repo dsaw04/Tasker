@@ -8,10 +8,10 @@ export const useStreak = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStreak = useCallback(async () => {
-    setLoading(true); 
+    setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get("/users/streak");
+      const response = await apiClient.get("/metrics/streak");
       setStreak(response.data.streak);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {

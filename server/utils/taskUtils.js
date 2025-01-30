@@ -1,5 +1,6 @@
 import Task from "../models/taskModel.js";
-import User from "../models/userModel.js";
+import UserMetrics from "../models/userMetricsModel.js";
+import { redisClient } from "../config/redisClient.js";
 
 /**
  * Checks whether a date is either today or in the future.
@@ -39,13 +40,23 @@ export const isDuplicateTask = async (userId, description, date) => {
  * @param {ObjectId} userId - The user's ID.
  */
 export const handleOverdueTasks = async (userId) => {
+  const now = new Date();
+
   const overdueTasks = await Task.updateMany(
-    { user: userId, date: { $lt: new Date() } },
+    { user: userId, date: { $lt: now }, isOverdue: false },
     { $set: { isOverdue: true } }
   );
 
   if (overdueTasks.modifiedCount > 0) {
-    await User.findByIdAndUpdate(userId, { $set: { streak: 0 } });
+    const userMetrics = await UserMetrics.findOne({ user: userId });
+
+    if (userMetrics && userMetrics.streak > 0) {
+      userMetrics.streak = 0;
+      await userMetrics.save();
+
+      const cacheKey = `streak:${userId}`;
+      await redisClient.set(cacheKey, 0, { EX: 86400 });
+    }
   }
 };
 

@@ -1,8 +1,9 @@
 import User from "../models/userModel.js";
 import Task from "../models/taskModel.js";
+import UserMetrics from "../models/userMetricsModel.js";
 
 /**
- * Deletes guest users and their associated tasks.
+ * Deletes guest users, their tasks, and their metrics.
  * Runs as part of a daily cleanup job.
  */
 export const deleteGuestUsersAndTasks = async () => {
@@ -15,11 +16,15 @@ export const deleteGuestUsersAndTasks = async () => {
     }
 
     const guestUserIds = guestUsers.map((user) => user._id);
-    await Task.deleteMany({ user: { $in: guestUserIds } });
-    const result = await User.deleteMany({ _id: { $in: guestUserIds } });
 
-    console.log(`Deleted ${result.deletedCount} guest users and their tasks.`);
-    return result.deletedCount;
+    await Promise.all([
+      Task.deleteMany({ user: { $in: guestUserIds } }),
+      UserMetrics.deleteMany({ user: { $in: guestUserIds } }),
+      User.deleteMany({ _id: { $in: guestUserIds } })
+    ]);
+
+    console.log(`Deleted ${guestUsers.length} guest users, their tasks, and metrics.`);
+    return guestUsers.length;
   } catch (error) {
     console.error("Error during guest user cleanup:", error);
     throw error;
@@ -27,7 +32,7 @@ export const deleteGuestUsersAndTasks = async () => {
 };
 
 /**
- * Deletes unverified users older than 30 days along with their associated tasks.
+ * Deletes unverified users older than 30 days, their tasks, and their metrics.
  * Runs as part of a monthly cleanup job.
  */
 export const deleteUnverifiedUsersAndTasks = async () => {
@@ -46,13 +51,15 @@ export const deleteUnverifiedUsersAndTasks = async () => {
     }
 
     const unverifiedUserIds = unverifiedUsers.map((user) => user._id);
-    await Task.deleteMany({ user: { $in: unverifiedUserIds } });
-    const result = await User.deleteMany({ _id: { $in: unverifiedUserIds } });
 
-    console.log(
-      `Deleted ${result.deletedCount} unverified users and their tasks.`
-    );
-    return result.deletedCount;
+    await Promise.all([
+      Task.deleteMany({ user: { $in: unverifiedUserIds } }),
+      UserMetrics.deleteMany({ user: { $in: unverifiedUserIds } }),
+      User.deleteMany({ _id: { $in: unverifiedUserIds } })
+    ]);
+
+    console.log(`Deleted ${unverifiedUsers.length} unverified users, their tasks, and metrics.`);
+    return unverifiedUsers.length;
   } catch (error) {
     console.error("Error during unverified user cleanup:", error);
     throw error;

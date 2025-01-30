@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = authHeader?.split(" ")[1] || req.cookies.accessToken;
 
   if (!token) {
     return res.status(401).json({ error: "Access Denied: Token missing" });
@@ -10,7 +10,7 @@ export const authenticateToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.id; //MongoDB _id
+    req.user = decoded.id;
     next();
   } catch (error) {
     console.error("Token verification error:", error.message);

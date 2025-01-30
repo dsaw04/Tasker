@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import User from "../models/userModel.js";
+import UserMetrics from "../models/userMetricsModel.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import {
   sendVerificationEmail,
@@ -43,6 +44,7 @@ export const createUser = async (req, res) => {
       verificationTokenExpires: Date.now() + 10 * 60 * 1000, //10 mins
     });
     await newUser.save();
+    await UserMetrics.create({ user: newUser._id, streak: 0 });
     await sendVerificationEmail(email, verificationToken, username);
 
     res.status(201).json({
@@ -263,39 +265,6 @@ export const createGuest = async (req, res) => {
     res.status(201).json({ message: "Guest user created successfully" });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
-  }
-};
-//Retrieve a user streak.
-export const getStreak = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ error: "Access Denied: Token missing" });
-    }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.id;
-
-    const user = await User.findById(req.user);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found.",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      streak: user.streak,
-    });
-  } catch (err) {
-    console.error("Error fetching streak:", err.message);
-    res.status(500).json({
-      success: false,
-      message: "Server error occurred.",
-      error: err.message,
-    });
   }
 };
 //Method to send users a link to reset password.

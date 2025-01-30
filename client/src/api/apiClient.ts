@@ -6,16 +6,28 @@ export const setAccessToken = (token: string | null) => {
   accessToken = token;
 };
 
+const getAccessTokenFromCookies = (): string | null => {
+  return (
+    document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("accessToken="))
+      ?.split("=")[1] || null
+  );
+};
+
 const apiClient = axios.create({
   baseURL: "http://localhost:8000/api",
+  withCredentials: true,
 });
 
 apiClient.interceptors.request.use(
   (config) => {
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const token = accessToken || getAccessTokenFromCookies();
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    config.withCredentials = true;
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -43,7 +55,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-        window.location.href = "/login"; 
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

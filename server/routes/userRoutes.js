@@ -7,7 +7,6 @@ import {
   verifyEmail,
   resendVerificationEmail,
   createGuest,
-  getStreak,
   forgotPassword,
   resetPassword,
 } from "../controllers/userController.js";
@@ -22,7 +21,6 @@ import { validateUserRegistration } from "../validators/authValidators.js";
 
 const router = express.Router();
 
-router.get("/streak", getStreak);
 router.post("/register", validateUserRegistration, createUser); //temp remove registerRateLimiter
 router.post("/login", loginUser); //temp remove loginRateLimiter
 router.post("/refresh", refreshToken);

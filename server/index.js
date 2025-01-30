@@ -3,12 +3,14 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import taskRoute from "./routes/taskRoutes.js";
 import userRoute from "./routes/userRoutes.js";
+import userMetricRoute from "./routes/userMetricRoutes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectRabbitMQ } from "./utils/rabbitmq.js";
 import { startEmailConsumer } from "./queues/emailConsumer.js";
 import { scheduleCleanupJob } from "./cronJobs/cleanupJobs.js";
 import { scheduleDailyTaskEmail } from "./cronJobs/dailyTaskEmail.js";
+import { connectRedis } from "./config/redisClient.js";
 
 dotenv.config();
 
@@ -37,6 +39,7 @@ mongoose
   .then(async () => {
     console.log("Database connected successfully!");
     await connectRabbitMQ();
+    await connectRedis();
     startEmailConsumer();
     scheduleDailyTaskEmail();
     scheduleCleanupJob();
@@ -52,3 +55,4 @@ mongoose
 // Routes
 app.use("/api", taskRoute);
 app.use("/api/users", userRoute);
+app.use("/api/metrics", userMetricRoute);

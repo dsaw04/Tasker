@@ -6,6 +6,7 @@ import {
   isDuplicateTask,
   isTodayOrFuture,
 } from "../utils/taskUtils.js";
+import { incrementUserStreak } from "../utils/userMetricUtils.js";
 
 //Create a new task for a given user. Ensures the task is a valid task for the future.
 export const create = async (req, res) => {
@@ -218,7 +219,6 @@ export const markDone = async (req, res) => {
     }
 
     const task = await Task.findOne({ _id: id, user: req.user });
-
     if (!task) {
       return res.status(404).json({
         success: false,
@@ -226,20 +226,19 @@ export const markDone = async (req, res) => {
       });
     }
 
-    const userObject = await User.findById(req.user);
-
+    // Increment streak only if task is **not overdue**
     if (!task.isOverdue) {
-      userObject.streak += 1;
+      await incrementUserStreak(req.user);
     }
-    await Promise.all([userObject.save(), task.deleteOne()]);
 
+    await task.deleteOne();
     return res.status(200).json({
       success: true,
       message: "Task marked as done and streak updated successfully!",
     });
   } catch (err) {
     console.error("Error marking task as done:", err.message);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server error occurred.",
       error: err.message,
