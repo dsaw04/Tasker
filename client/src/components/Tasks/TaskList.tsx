@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Task from "./Task";
 import { TaskType } from "../../types/TaskType";
 
@@ -21,7 +21,7 @@ export default function TaskList({
   onMarkDone,
 }: TaskListProps) {
   const [currentPage, setCurrentPage] = useState(1); 
-  const tasksPerPage = 5;
+  const tasksPerPage = 4;
   const startIndex = (currentPage - 1) * tasksPerPage;
   const endIndex = startIndex + tasksPerPage;
   const currentTasks = tasks.slice(startIndex, endIndex);
