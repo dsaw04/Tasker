@@ -126,35 +126,45 @@ const Login: React.FC = () => {
   return (
     <div className="relative w-screen h-screen">
       {/* Left Side with Blobs and Logo */}
-      <div className="absolute top-0 left-0 w-[40%] h-full z-10">
+      <div className="hidden md:block absolute top-0 left-0 w-[40%] h-full z-10">
         <Blobs />
       </div>
-      <div className="absolute top-[0%] left-[0%] z-20">
+      <div className="hidden md:block absolute top-[0%] left-[0%] z-20">
         <img
           src="/assets/tasker-logo.svg"
           alt="Tasker Logo"
-          className="w-[30%] h-auto"
+          className="w-[20%] h-auto"
           draggable="false"
         />
       </div>
-      <div className="absolute top-[13%] left-[2%] z-20">
-        <h1 className="text-white font-extrabold text-[60px] font-milanello tracking-wider">
+      <div className="hidden md:block absolute top-[15%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold md:text-[40px] lg:text-5xl font-milanello tracking-wider">
           Sort out your
         </h1>
       </div>
-      <div className="absolute top-[22%] left-[2%] z-20">
-        <h1 className="text-white font-extrabold text-[60px] font-milanello tracking-wider">
+      <div className="hidden md:block absolute top-[25%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold md:text-[40px] lg:text-5xl font-milanello tracking-wider">
           life
         </h1>
       </div>
 
+      {/* Black Hidden Logo */}
+      <div className="md:hidden absolute top-[0%] left-[0%] z-20">
+        <img
+          src="/assets/tasker-logo-black.svg"
+          alt="Tasker Logo"
+          className="w-[20%] h-auto"
+          draggable="false"
+        />
+      </div>
+
       {/* Right Side with Form */}
-      <div className="absolute top-0 left-1/3 w-2/3 h-full bg-white rounded-l-[40px] z-20 flex justify-center">
-        <div className="w-[85%] gap-2 flex flex-col mt-12">
-          <h1 className="text-5xl font-lexend font-bold text-zinc-900 mb-3">
+      <div className="w-full md:absolute md:top-0 md:left-1/3 md:w-2/3 h-full bg-white md:rounded-l-[40px] md:z-20 flex justify-center">
+        <div className="w-[85%] gap-2 flex flex-col mt-20 md:mt-12">
+          <h1 className="text-4xl md:text-5xl font-lexend font-bold text-zinc-900 mb-3">
             Welcome back,
           </h1>
-          <div className="mt-12">
+          <div className="md:mt-6 lg:mt-12">
             <form onSubmit={handleLogin}>
               <div className="space-y-8">
                 {/* Username Field */}
@@ -208,7 +218,7 @@ const Login: React.FC = () => {
                   )}
                 </FormControl>
               </div>
-              <div className="mt-12 flex-col flex gap-5">
+              <div className="mt-6 md:mt-8 lg:mt-12 flex-col flex gap-5">
                 <button
                   type="submit"
                   className="w-full py-3 bg-primary text-white text-xl font-semibold rounded-xl hover:bg-forestGreen transition duration-200"
@@ -222,18 +232,18 @@ const Login: React.FC = () => {
                   }
                 </button>
 
-                <div className="flex justify-around">
+                <div className="flex gap-10 lg:gap-0 justify-around">
                   <button
                     type="button"
                     onClick={loginWithGoogle}
-                    className="w-fit p-3 place-self-center gap-3 flex items-center bg-gray-200 text-primary text-xl font-semibold rounded-xl hover:bg-gray-300 transition duration-200"
+                    className="w-full lg:w-fit p-3 place-self-center justify-center gap-3 flex items-center bg-gray-200 text-primary text-xl font-semibold rounded-xl hover:bg-gray-300 transition duration-200"
                   >
                     <img
                       src="/assets/google-color.svg"
                       alt="google-logo"
                       className="w-[20px] h-auto"
                     />
-                    Login with Google
+                    <span className="hidden lg:block">Login with Google</span>
                   </button>
 
                   <button
@@ -242,19 +252,19 @@ const Login: React.FC = () => {
                       (window.location.href =
                         "http://localhost:8000/api/users/github")
                     }
-                    className="w-fit p-3 place-self-center gap-3 flex items-center bg-black text-white text-xl font-semibold rounded-xl hover:bg-gray-800 transition duration-200"
+                    className="w-full lg:w-fit p-3 place-self-center gap-3 justify-center flex items-center bg-black text-white text-xl font-semibold rounded-xl hover:bg-gray-800 transition duration-200"
                   >
                     <FontAwesomeIcon
                       icon={faGithub}
                       className="text-white ml-2"
                     />
-                    Login with GitHub
+                     <span className="hidden lg:block">Login with Github</span>
                   </button>
                 </div>
               </div>
             </form>
-            <div className="justify-between flex mt-4 items-center">
-              <p>
+            <div className="justify-between flex mt-10 md:mt-2 lg:mt-4 items-center">
+              <p className="hidden md:block">
                 Don't have an account?{" "}
                 <a
                   href="/register"
@@ -264,6 +274,15 @@ const Login: React.FC = () => {
                   Register
                 </a>
               </p>
+
+              <a
+                href="/register"
+                className="text-secondary hover:text-primary md:hidden"
+              >
+                {" "}
+                Register Now!
+              </a>
+
               <a
                 href="/forgot-password"
                 className="text-secondary hover:text-primary"
@@ -274,7 +293,7 @@ const Login: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-center my-4 mb-6">
+          <div className="flex items-center justify-center md:mt-4 md:mb-2 lg:mb-6">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="mx-4 text-zinc-900 font-medium">or</span>
             <div className="flex-grow border-t border-gray-300"></div>
@@ -294,7 +313,7 @@ const Login: React.FC = () => {
       <img
         src="/assets/tasker-duck.svg"
         alt="Tasker Duck"
-        className="absolute bottom-[0%] left-[0%] z-20 w-[600px] h-auto drop-shadow-md"
+        className="hidden md:block absolute bottom-[0%] left-[0%] z-20 w-[37%] h-auto drop-shadow-md"
         draggable="false"
       />
     </div>

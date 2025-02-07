@@ -32,7 +32,7 @@ const Register: React.FC = () => {
 
   const validatePassword = (password: string) => {
     const errors = [];
-  
+
     if (password.length < 8) {
       errors.push("at least 8 characters");
     }
@@ -45,10 +45,9 @@ const Register: React.FC = () => {
     if (!/\d/.test(password)) {
       errors.push("one number (0-9)");
     }
-  
+
     return errors;
   };
-  
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,35 +114,45 @@ const Register: React.FC = () => {
   return (
     <div className="relative w-screen h-screen">
       {/* Left Side with Blobs and Logo */}
-      <div className="absolute top-0 left-0 w-[40%] h-full z-10">
+      <div className="hidden md:block absolute top-0 left-0 w-[40%] h-full z-10">
         <Blobs />
       </div>
-      <div className="absolute top-[0%] left-[0%] z-20">
+      <div className="hidden md:block absolute top-[0%] left-[0%] z-20">
         <img
           src="/assets/tasker-logo.svg"
           alt="Tasker Logo"
-          className="w-[30%] h-auto"
+          className="w-[20%] h-auto"
           draggable="false"
         />
       </div>
-      <div className="absolute top-[13%] left-[2%] z-20">
-        <h1 className="text-white font-extrabold text-[60px] font-milanello tracking-wider">
+      <div className="hidden md:block absolute top-[15%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold md:text-[40px] lg:text-5xl font-milanello tracking-wider">
           Sort out your
         </h1>
       </div>
-      <div className="absolute top-[22%] left-[2%] z-20">
-        <h1 className="text-white font-extrabold text-[60px] font-milanello tracking-wider">
+      <div className="hidden md:block absolute top-[25%] left-[2%] z-20">
+        <h1 className="text-white font-extrabold md:text-[40px] lg:text-5xl font-milanello tracking-wider">
           life
         </h1>
       </div>
 
+      {/* Black Hidden Logo */}
+      <div className="md:hidden absolute top-[0%] left-[0%] z-20">
+        <img
+          src="/assets/tasker-logo-black.svg"
+          alt="Tasker Logo"
+          className="w-[20%] h-auto"
+          draggable="false"
+        />
+      </div>
+
       {/* Right Side with Form */}
-      <div className="absolute top-0 left-1/3 w-2/3 h-screen bg-white rounded-l-[40px] z-20 flex justify-center">
-        <div className="w-[85%] gap-2 flex flex-col mt-12">
-          <h1 className="text-5xl font-lexend font-bold text-zinc-900 mb-3">
+      <div className="w-full md:absolute md:top-0 md:left-1/3 md:w-2/3 h-full bg-white md:rounded-l-[40px] md:z-20 flex justify-center">
+        <div className="w-[85%] gap-2 flex flex-col mt-16 md:mt-12">
+          <h1 className="text-4xl md:text-5xl font-lexend font-bold text-zinc-900 mb-3">
             Start your journey,
           </h1>
-          <div className="mt-12">
+          <div className="md:mt-6 lg:mt-12">
             <form onSubmit={handleRegister}>
               <div className="space-y-8">
                 <TextField
@@ -199,7 +208,7 @@ const Register: React.FC = () => {
                   )}
                 </FormControl>
               </div>
-              <div className="mt-10">
+              <div className="mt-6 md:mt-10">
                 <button
                   type="submit"
                   className={`w-full py-3 text-white text-xl font-semibold rounded-xl transition duration-200 ${
@@ -228,6 +237,12 @@ const Register: React.FC = () => {
             </a>
           </p>
 
+          <div className="flex items-center justify-center md:mt-4 md:mb-2 lg:mb-6">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="mx-4 text-zinc-900 font-medium">or</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+
           <button
             onClick={handleGuestLogin}
             className="w-full py-3 bg-secondary text-white text-xl rounded-xl hover:bg-primary transition duration-200"
@@ -240,7 +255,7 @@ const Register: React.FC = () => {
       <img
         src="/assets/tasker-duck.svg"
         alt="Tasker Duck"
-        className="absolute bottom-[0%] left-[0%] z-20 w-[600px] h-auto drop-shadow-md"
+        className="hidden md:block absolute bottom-[0%] left-[0%] z-20 w-[37%] h-auto drop-shadow-md"
         draggable="false"
       />
     </div>
