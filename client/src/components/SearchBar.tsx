@@ -15,7 +15,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
       className="flex justify-center tooltip tooltip-bottom m-2"
       data-tip="Search for a task."
     >
-      <label className="input input-bordered items-center rounded-3xl flex gap-2 w-[70%] bg-white text-zinc-900">
+      <label className="input input-bordered items-center rounded-3xl flex gap-2 w-[80%] bg-white text-zinc-900">
         <input
           type="text"
           placeholder="Search"

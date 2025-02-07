@@ -30,20 +30,20 @@ const ForgotPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen">
+    <div className="relative w-screen h-screen bg-gray-100">
       {/* Blobs Background */}
-      <div className="absolute inset-0 z-1">
+      <div className="hidden md:block absolute inset-0 z-1">
         <Blobs />
       </div>
 
       {/* Forgot Password Card */}
       <div className="flex items-center justify-center min-h-screen">
-        <div className="max-w-md w-full bg-gray-100 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+        <div className="p-4 md:p-0 max-w-md w-full bg-gray-100 md:bg-opacity-50 md:backdrop-filter md:backdrop-blur-xl rounded-2xl md:shadow-xl overflow-hidden">
           <motion.div
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gray-100 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full max-w-md"
+            className="bg-gray-100 md:bg-opacity-50 md:backdrop-filter md:backdrop-blur-xl rounded-2xl md:shadow-2xl p-8 w-full max-w-md"
           >
             <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-secondary to-primary text-transparent bg-clip-text">
               Forgot Password
