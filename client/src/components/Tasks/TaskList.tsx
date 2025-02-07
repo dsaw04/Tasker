@@ -20,16 +20,12 @@ export default function TaskList({
   onUpdate,
   onMarkDone,
 }: TaskListProps) {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1); 
   const tasksPerPage = 5;
-  const totalPages = Math.ceil(tasks.length / tasksPerPage);
-
-  // Check if screen size is mobile
-  const isMobile = window.innerWidth < 768;
-
   const startIndex = (currentPage - 1) * tasksPerPage;
   const endIndex = startIndex + tasksPerPage;
-  const currentTasks = isMobile ? tasks : tasks.slice(startIndex, endIndex);
+  const currentTasks = tasks.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(tasks.length / tasksPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -37,7 +33,8 @@ export default function TaskList({
 
   return (
     <div className="task-list min-h-screen flex flex-col justify-between">
-      <div className="flex-grow h-fit">
+      {/* Render tasks for the current page */}
+      <div className="flex-grow">
         {currentTasks.map((task) => (
           <div
             key={task._id}
@@ -57,40 +54,45 @@ export default function TaskList({
         ))}
       </div>
 
-      {/* Pagination (Disabled on Mobile) */}
-      {!isMobile && totalPages > 1 && (
-        <div className="fixed bottom-0 left-0 w-full bg-white py-4 shadow-md hidden md:flex">
-          <div className="flex justify-center items-center w-full">
-            <div className="join">
-              <button
-                className={`join-item btn ${currentPage === 1 ? "btn-disabled" : ""}`}
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
+      <div className="fixed bottom-0 left-0 w-full bg-white py-4 shadow-md">
+        <div className="flex justify-center items-center">
+          <div className="join">
+            <button
+              className={`join-item btn ${
+                currentPage === 1 ? "btn-disabled" : ""
+              }`}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
 
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i + 1}
-                  className={`join-item btn ${currentPage === i + 1 ? "btn-active" : ""}`}
-                  onClick={() => handlePageChange(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
-
+            {/* Page Numbers */}
+            {Array.from({ length: totalPages }, (_, i) => (
               <button
-                className={`join-item btn ${currentPage === totalPages ? "btn-disabled" : ""}`}
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                key={i + 1}
+                className={`join-item btn ${
+                  currentPage === i + 1 ? "btn-active" : ""
+                }`}
+                onClick={() => handlePageChange(i + 1)}
               >
-                Next
+                {i + 1}
               </button>
-            </div>
+            ))}
+
+            {/* Next Button */}
+            <button
+              className={`join-item btn ${
+                currentPage === totalPages ? "btn-disabled" : ""
+              }`}
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
