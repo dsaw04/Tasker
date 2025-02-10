@@ -16,7 +16,7 @@ const getAccessTokenFromCookies = (): string | null => {
 };
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
 
@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshResponse = await axios.post(
-          "http://localhost:8000/api/users/refresh",
+          `${import.meta.env.VITE_API_BASE_URL}/users/refresh`,
           {},
           { withCredentials: true }
         );

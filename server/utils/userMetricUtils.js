@@ -35,3 +35,17 @@ export const incrementUserStreak = async (userId) => {
 
   return userMetrics.streak;
 };
+
+/*
+ * Creates user metrics
+ */
+export const createUserMetrics = async (userId, role) => {
+  const userMetrics = new UserMetrics({
+    user: userId,
+    role: role,
+  });
+
+  await userMetrics.save();
+
+  return userMetrics;
+};

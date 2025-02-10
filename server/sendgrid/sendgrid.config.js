@@ -64,7 +64,6 @@ export async function sendDailyTaskEmail(email, tasks, username) {
 
   try {
     await sgMail.send(msg);
-    console.log(`Daily tasks email sent to ${email}`);
   } catch (error) {
     console.error(
       "Error sending daily tasks email:",

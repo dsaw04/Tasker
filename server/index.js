@@ -19,7 +19,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
@@ -37,15 +37,12 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(async () => {
-    console.log("Database connected successfully!");
     await connectRabbitMQ();
     await connectRedis();
     startEmailConsumer();
     scheduleDailyTaskEmail();
     scheduleCleanupJob();
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
+    app.listen(PORT);
   })
   .catch((error) => {
     console.error("Database connection failed:", error.message);

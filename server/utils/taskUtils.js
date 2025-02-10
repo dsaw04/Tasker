@@ -81,8 +81,6 @@ export const getTasksForToday = async () => {
     999
   );
 
-  console.log("Fetching tasks for today between:", startOfDay, "and", endOfDay);
-
   try {
     // Fetch tasks due today, including user email, username, and role
     const tasks = await Task.find({
@@ -90,11 +88,9 @@ export const getTasksForToday = async () => {
     }).populate("user", "email username role"); // Include email, username, and role
 
     if (!tasks.length) {
-      console.log("No tasks found for today.");
       return [];
     }
 
-    console.log("Tasks fetched:", tasks);
 
     // Group tasks by user, skipping tasks created by guests
     const userTaskMap = tasks.reduce((acc, task) => {
@@ -129,8 +125,6 @@ export const getTasksForToday = async () => {
     }, {});
 
     const result = Object.values(userTaskMap); // Convert map to array
-    console.log("Tasks organized by user (excluding guest tasks):", result);
-
     return result;
   } catch (error) {
     console.error("Error fetching tasks for today:", error);

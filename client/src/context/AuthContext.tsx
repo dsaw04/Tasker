@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const checkAuth = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/users/refresh",
+          `${import.meta.env.VITE_API_BASE_URL}/users/refresh`,
           {},
           { withCredentials: true }
         );
@@ -70,13 +70,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const loginWithGoogle = () => {
-    window.location.href = "http://localhost:8000/api/users/google";
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/users/google`;
   };
 
   const login = async (username: string, password: string) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/users/login",
+        `${import.meta.env.VITE_API_BASE_URL}/users/login`,
         { username, password },
         { withCredentials: true }
       );
@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/users/register",
+        `${import.meta.env.VITE_API_BASE_URL}/users/register`,
         { username, email, password },
         { withCredentials: true }
       );
@@ -163,7 +163,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const loginAsGuest = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/users/guest",
+        `${import.meta.env.VITE_API_BASE_URL}/users/guest`,
         {},
         { withCredentials: true }
       );
@@ -177,10 +177,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const forgotPassword = async (email: string) => {
     try {
-      await axios.post("http://localhost:8000/api/users/forgot-password", {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/users/forgot-password`, {
         email,
       });
-      console.log("Password reset email sent.");
     } catch (error) {
       console.error("Forgot password request failed:", error);
       throw error;
@@ -189,11 +188,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const resetPassword = async (token: string, password: string) => {
     try {
-      await axios.put("http://localhost:8000/api/users/reset-password", {
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/reset-password`, {
         token,
         password,
       });
-      console.log("Password reset successful.");
     } catch (error) {
       console.error("Reset password request failed:", error);
       throw error;

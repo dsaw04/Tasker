@@ -250,7 +250,7 @@ const Login: React.FC = () => {
                     type="button"
                     onClick={() =>
                       (window.location.href =
-                        "http://localhost:8000/api/users/github")
+                        `${import.meta.env.VITE_API_BASE_URL}/users/github`)
                     }
                     className="w-full lg:w-fit p-3 place-self-center gap-3 justify-center flex items-center bg-black text-white text-xl font-semibold rounded-xl hover:bg-gray-800 transition duration-200"
                   >

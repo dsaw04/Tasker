@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import User from "../models/userModel.js";
-import UserMetrics from "../models/userMetricsModel.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import {
   sendVerificationEmail,
@@ -14,6 +13,8 @@ import {
   generateRefreshToken,
   generateGuestRefreshToken,
 } from "../utils/tokenUtils.js";
+import { createUserMetrics } from "../utils/userMetricUtils.js";
+import { create } from "domain";
 
 //Create a new user.
 export const createUser = async (req, res) => {
@@ -44,14 +45,13 @@ export const createUser = async (req, res) => {
       verificationTokenExpires: Date.now() + 10 * 60 * 1000, //10 mins
     });
     await newUser.save();
-    await UserMetrics.create({ user: newUser._id, streak: 0 });
+    await createUserMetrics(newUser._id, "user");
     await sendVerificationEmail(email, verificationToken, username);
 
     res.status(201).json({
       message: "User created successfully",
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -243,7 +243,7 @@ export const createGuest = async (req, res) => {
       guestEditLimit: 10,
     });
     await guestUser.save();
-
+    await createUserMetrics(guestUser._id, "guest");
     const token = generateAccessToken(guestUser._id);
     const refreshToken = generateGuestRefreshToken(guestUser._id);
     guestUser.refreshToken = refreshToken;
@@ -282,7 +282,7 @@ export const forgotPassword = async (req, res) => {
       expiresIn: "15m",
     });
 
-    const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
     await sendResetPasswordEmail(email, resetLink, user.username);
     return res.status(200).json({ message: "Password reset email sent." });
   } catch (error) {

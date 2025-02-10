@@ -11,7 +11,6 @@ export const deleteGuestUsersAndTasks = async () => {
     const guestUsers = await User.find({ role: "guest" });
 
     if (guestUsers.length === 0) {
-      console.log("No guest users to delete.");
       return 0;
     }
 
@@ -23,7 +22,6 @@ export const deleteGuestUsersAndTasks = async () => {
       User.deleteMany({ _id: { $in: guestUserIds } })
     ]);
 
-    console.log(`Deleted ${guestUsers.length} guest users, their tasks, and metrics.`);
     return guestUsers.length;
   } catch (error) {
     console.error("Error during guest user cleanup:", error);
@@ -46,7 +44,6 @@ export const deleteUnverifiedUsersAndTasks = async () => {
     });
 
     if (unverifiedUsers.length === 0) {
-      console.log("No unverified users to delete.");
       return 0;
     }
 
@@ -58,7 +55,6 @@ export const deleteUnverifiedUsersAndTasks = async () => {
       User.deleteMany({ _id: { $in: unverifiedUserIds } })
     ]);
 
-    console.log(`Deleted ${unverifiedUsers.length} unverified users, their tasks, and metrics.`);
     return unverifiedUsers.length;
   } catch (error) {
     console.error("Error during unverified user cleanup:", error);

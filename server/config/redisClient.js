@@ -17,7 +17,6 @@ const connectRedis = async () => {
   try {
     if (!redisClient.isOpen) {
       await redisClient.connect();
-      console.log("Connected to Redis");
     }
   } catch (err) {
     console.error("Redis connection failed:", err);

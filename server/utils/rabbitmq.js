@@ -6,10 +6,9 @@ let channel;
 export const connectRabbitMQ = async () => {
   try {
     connection = await amqp.connect(
-      process.env.RABBITMQ_URI || "amqp://localhost"
+      process.env.RABBITMQ_URI
     );
     channel = await connection.createChannel();
-    console.log("Connected to RabbitMQ");
     return channel;
   } catch (error) {
     console.error("Error connecting to RabbitMQ:", error);

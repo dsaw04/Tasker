@@ -6,13 +6,17 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/tokenUtils.js";
+import { createUserMetrics } from "../utils/userMetricUtils.js";
+
+const GOOGLE_CALLBACK_URL = `${process.env.BACKEND_URL}/auth/google/callback`;
+const GITHUB_CALLBACK_URL = `${process.env.BACKEND_URL}/auth/github/callback`;
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      callbackURL: GOOGLE_CALLBACK_URL,
     },
     async (accessToken, googleRefreshToken, profile, done) => {
       try {
@@ -39,6 +43,7 @@ passport.use(
           Date.now() + 1000 * 60 * 60 * 24 * 7
         );
         await user.save();
+        await createUserMetrics(user._id, "user");
 
         return done(null, {
           user,
@@ -57,7 +62,7 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: process.env.GITHUB_CALLBACK_URL,
+      callbackURL: GITHUB_CALLBACK_URL,
       scope: ["read:user", "user:email"],
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -96,6 +101,7 @@ passport.use(
           Date.now() + 7 * 24 * 60 * 60 * 1000
         );
         await user.save();
+        await createUserMetrics(user._id, "user");
 
         return done(null, {
           user,

@@ -14,9 +14,6 @@ export const scheduleCleanupJob = () => {
     async () => {
       try {
         const deletedCount = await deleteGuestUsersAndTasks();
-        console.log(
-          `Guest cleanup completed. Removed ${deletedCount} guest users and their tasks.`
-        );
       } catch (error) {
         console.error("Error during guest user cleanup:", error);
       }
@@ -32,9 +29,6 @@ export const scheduleCleanupJob = () => {
     async () => {
       try {
         const deletedCount = await deleteUnverifiedUsersAndTasks();
-        console.log(
-          `Unverified user cleanup completed. Removed ${deletedCount} unverified users and their tasks.`
-        );
       } catch (error) {
         console.error("Error during unverified user cleanup:", error);
       }
@@ -43,6 +37,4 @@ export const scheduleCleanupJob = () => {
       timezone: "Pacific/Auckland",
     }
   );
-
-  console.log("Guest and unverified user cleanup jobs scheduled.");
 };
