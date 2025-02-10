@@ -8,8 +8,8 @@ import {
 } from "../utils/tokenUtils.js";
 import { createUserMetrics } from "../utils/userMetricUtils.js";
 
-const GOOGLE_CALLBACK_URL = `${process.env.BACKEND_URL}/auth/google/callback`;
-const GITHUB_CALLBACK_URL = `${process.env.BACKEND_URL}/auth/github/callback`;
+const GOOGLE_CALLBACK_URL = `${process.env.BACKEND_URL}/api/users/google/callback`;
+const GITHUB_CALLBACK_URL = `${process.env.BACKEND_URL}/api/users/github/callback`;
 
 passport.use(
   new GoogleStrategy(
@@ -33,6 +33,7 @@ passport.use(
             isVerified: true,
           });
           await user.save();
+          await createUserMetrics(user._id, "user");
         }
 
         const customAccessToken = generateAccessToken(user._id);
@@ -43,7 +44,6 @@ passport.use(
           Date.now() + 1000 * 60 * 60 * 24 * 7
         );
         await user.save();
-        await createUserMetrics(user._id, "user");
 
         return done(null, {
           user,
@@ -83,6 +83,7 @@ passport.use(
             role: "user",
           });
           await user.save();
+          await createUserMetrics(user._id, "user");
         } else {
           if (!user.githubId) {
             user.githubId = profile.id;
@@ -101,7 +102,6 @@ passport.use(
           Date.now() + 7 * 24 * 60 * 60 * 1000
         );
         await user.save();
-        await createUserMetrics(user._id, "user");
 
         return done(null, {
           user,
