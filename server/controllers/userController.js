@@ -138,13 +138,13 @@ export const loginUser = async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     return res.status(200).json({ message: "Login successful!" });
@@ -185,13 +185,13 @@ export const refreshToken = async (req, res) => {
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.status(200).json({ message: "Token Refreshed!" });
@@ -253,13 +253,13 @@ export const createGuest = async (req, res) => {
     res.cookie("accessToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.status(201).json({ message: "Guest user created successfully" });

@@ -45,13 +45,13 @@ router.get(
     res.cookie("accessToken", customAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.redirect(`${process.env.FRONTEND_URL}/`);
@@ -72,13 +72,13 @@ router.get(
     res.cookie("accessToken", customAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "None",
     });
 
     res.redirect(`${process.env.FRONTEND_URL}/`);
