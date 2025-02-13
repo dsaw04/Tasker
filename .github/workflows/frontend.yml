@@ -19,4 +19,4 @@ jobs:
         run: docker build -t my-frontend ./client
 
       - name: Push to Render (Trigger Deployment)
-        run: curl -X POST "$RENDER_DEPLOY_HOOK_FRONTEND"
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
