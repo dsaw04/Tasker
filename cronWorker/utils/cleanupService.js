@@ -1,6 +1,6 @@
-import User from "../models/userModel.js";
-import Task from "../models/taskModel.js";
-import UserMetrics from "../models/userMetricsModel.js";
+import User from "../../server/models/userModel.js";
+import Task from "../../server/models/taskModel.js";
+import UserMetrics from "../../server/models/userMetricsModel.js";
 
 /**
  * Deletes guest users, their tasks, and their metrics.
@@ -19,7 +19,7 @@ export const deleteGuestUsersAndTasks = async () => {
     await Promise.all([
       Task.deleteMany({ user: { $in: guestUserIds } }),
       UserMetrics.deleteMany({ user: { $in: guestUserIds } }),
-      User.deleteMany({ _id: { $in: guestUserIds } })
+      User.deleteMany({ _id: { $in: guestUserIds } }),
     ]);
 
     return guestUsers.length;
@@ -52,7 +52,7 @@ export const deleteUnverifiedUsersAndTasks = async () => {
     await Promise.all([
       Task.deleteMany({ user: { $in: unverifiedUserIds } }),
       UserMetrics.deleteMany({ user: { $in: unverifiedUserIds } }),
-      User.deleteMany({ _id: { $in: unverifiedUserIds } })
+      User.deleteMany({ _id: { $in: unverifiedUserIds } }),
     ]);
 
     return unverifiedUsers.length;

@@ -1,4 +1,7 @@
 import amqp from "amqplib";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 let connection;
 let channel;

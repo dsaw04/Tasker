@@ -1,13 +1,14 @@
 import cron from "node-cron";
-import { getTasksForToday } from "../utils/taskUtils.js";
-import { publishEmailTask } from "../queues/emailPublisher.js";
+import { getTasksForToday } from "./utils/getTaskForToday.js";
+import { publishEmailTask } from "./utils/emailPublisher.js";
 
 export const scheduleDailyTaskEmail = () => {
   cron.schedule(
-    "0 9 * * *", // Run daily at 9:00 AM
+    "* * * * *",
     async () => {
+      // ✅ Runs every 1 minute for testing
+      console.log("cron triggered");
       try {
-
         const usersWithTasks = await getTasksForToday();
 
         // Publish email tasks to RabbitMQ

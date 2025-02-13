@@ -1,0 +1,23 @@
+{
+  "name": "queueworker",
+  "version": "1.0.0",
+  "description": "Works queue for sending emails.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Dhruv Sawant",
+  "license": "ISC",
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.4",
+    "amqplib": "^0.10.5",
+    "dotenv": "^16.4.7",
+    "queueworker": "file:"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

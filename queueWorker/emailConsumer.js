@@ -1,5 +1,5 @@
-import { getChannel } from "../utils/rabbitmq.js";
-import { sendDailyTaskEmail } from "../sendgrid/sendgrid.config.js";
+import { getChannel } from "./rabbitmq.js";
+import { sendDailyTaskEmail } from "./utils/sendgrid.config.js";
 
 const QUEUE_NAME = "emailQueue";
 
@@ -21,7 +21,6 @@ export const startEmailConsumer = async () => {
               channel.nack(msg, false, false); // Reject without requeue
               return;
             }
-
             await sendDailyTaskEmail(email, tasks, username);
             channel.ack(msg);
           } catch (error) {

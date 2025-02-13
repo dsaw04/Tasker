@@ -1,4 +1,4 @@
-import { getChannel } from "../utils/rabbitmq.js";
+import { getChannel } from "../rabbitmq.js";
 
 const EMAIL_QUEUE = "emailQueue";
 

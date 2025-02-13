@@ -1,15 +1,6 @@
 version: "3.8"
 
 services:
-  backend:
-    build: ./server
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./server/.env
-    depends_on:
-      - mongo
-
   frontend:
     build: ./client
     ports:
@@ -19,12 +10,28 @@ services:
     depends_on:
       - backend
 
+  backend:
+    build: ./server
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - mongo
+      - redis
+
   mongo:
     image: mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: always
 
 volumes:
   mongo-data:

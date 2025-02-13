@@ -6,10 +6,6 @@ import userRoute from "./routes/userRoutes.js";
 import userMetricRoute from "./routes/userMetricRoutes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { connectRabbitMQ } from "./utils/rabbitmq.js";
-import { startEmailConsumer } from "./queues/emailConsumer.js";
-import { scheduleCleanupJob } from "./cronJobs/cleanupJobs.js";
-import { scheduleDailyTaskEmail } from "./cronJobs/dailyTaskEmail.js";
 import { connectRedis } from "./config/redisClient.js";
 
 dotenv.config();
@@ -32,17 +28,11 @@ const MONGO_URL = process.env.MONGO_URL;
 
 // Database Connection
 mongoose
-  .connect(MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(MONGO_URL)
   .then(async () => {
-    await connectRabbitMQ();
     await connectRedis();
-    startEmailConsumer();
-    scheduleDailyTaskEmail();
-    scheduleCleanupJob();
     app.listen(PORT);
+    console.log("Running");
   })
   .catch((error) => {
     console.error("Database connection failed:", error.message);

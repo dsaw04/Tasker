@@ -2,7 +2,7 @@ import cron from "node-cron";
 import {
   deleteGuestUsersAndTasks,
   deleteUnverifiedUsersAndTasks,
-} from "../utils/cleanupService.js";
+} from "./utils/cleanupService.js";
 
 /**
  * Schedules cleanup jobs for guest users (daily) and unverified users (monthly).
@@ -10,10 +10,12 @@ import {
 export const scheduleCleanupJob = () => {
   // Daily cleanup job for guest users
   cron.schedule(
-    "0 0 * * *",
+    "* * * * *",
     async () => {
+      // ✅ Runs every 1 minute for testing
+      console.log("cron triggered");
       try {
-        const deletedCount = await deleteGuestUsersAndTasks();
+        await deleteGuestUsersAndTasks();
       } catch (error) {
         console.error("Error during guest user cleanup:", error);
       }
@@ -25,10 +27,12 @@ export const scheduleCleanupJob = () => {
 
   // Monthly cleanup job for unverified users (runs on the 1st of every month)
   cron.schedule(
-    "0 1 1 * *",
+    "* * * * *",
     async () => {
+      // ✅ Runs every 1 minute for testing
+      console.log("cron triggered");
       try {
-        const deletedCount = await deleteUnverifiedUsersAndTasks();
+        await deleteUnverifiedUsersAndTasks();
       } catch (error) {
         console.error("Error during unverified user cleanup:", error);
       }
