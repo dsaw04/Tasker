@@ -43,7 +43,7 @@ const App: React.FC = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/*" element={<NotFound />}></Route>
+        <Route path="*" element={<NotFound />}></Route>
       </Routes>
     </Router>
   );
