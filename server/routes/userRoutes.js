@@ -26,7 +26,7 @@ router.post("/login", loginUser); //temp remove loginRateLimiter
 router.post("/refresh", refreshToken);
 router.post("/verify", emailRateLimiter, verifyEmail);
 router.post("/resend", emailRateLimiter, resendVerificationEmail);
-router.post("/guest", guestRateLimiter, createGuest);
+router.post("/guest", createGuest);
 router.delete("/logout", logoutUser);
 router.post("/forgot-password", emailRateLimiter, forgotPassword);
 router.put("/reset-password", emailRateLimiter, resetPassword);
