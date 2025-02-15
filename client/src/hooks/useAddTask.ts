@@ -2,13 +2,12 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import apiClient from "../api/apiClient";
 import { handleError } from "../utils/errorHandler";
-import { toLocalDatetime } from "../utils/toLocatDateTime";
 
 export const useAddTask = (onSuccess: () => void) => {
   const getDefaultDate = () => {
     const current = new Date();
     current.setMinutes(current.getMinutes() + 1);
-    return toLocalDatetime(current);
+    return current.toString();
   };
 
   const [formData, setFormData] = useState({
@@ -39,7 +38,10 @@ export const useAddTask = (onSuccess: () => void) => {
     setIsSubmitting(true);
 
     try {
-      await apiClient.post("/task", formData);
+      await apiClient.post("/task", {
+        ...formData,
+        date: new Date(formData.date),
+      });
       toast.success("Task added successfully!");
       resetForm();
       onSuccess();

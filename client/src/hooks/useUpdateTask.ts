@@ -6,15 +6,15 @@ import apiClient from "../api/apiClient";
 import { handleError } from "../utils/errorHandler";
 
 
-const toLocalDatetime = (date: Date): string =>
-  new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 16);
+// const toLocalDatetime = (date: Date): string =>
+//   new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+//     .toISOString()
+//     .slice(0, 16);
 
 export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
   const [formData, setFormData] = useState({
     description: "",
-    date: toLocalDatetime(new Date()),
+    date: new Date().toString(),
     status: "to-do" as TaskStatus,
   });
 
@@ -25,7 +25,7 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
     if (task) {
       setFormData({
         description: task.description,
-        date: toLocalDatetime(new Date(task.date)),
+        date: new Date(task.date).toString(),
         status: task.status,
       });
     }
@@ -42,7 +42,7 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
     if (task) {
       setFormData({
         description: task.description,
-        date: toLocalDatetime(new Date(task.date)),
+        date: new Date(task.date).toString(),
         status: task.status,
       });
     }
