@@ -5,21 +5,25 @@ import { TaskStatus } from "../types/TaskType";
 import apiClient from "../api/apiClient";
 import { handleError } from "../utils/errorHandler";
 
-
-// const toLocalDatetime = (date: Date): string =>
-//   new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-//     .toISOString()
-//     .slice(0, 16);
+const getDefaultDate = () => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + 1);
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(now.getDate()).padStart(2, "0")}T${String(
+    now.getHours()
+  ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+};
 
 export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
   const [formData, setFormData] = useState({
     description: "",
-    date: new Date().toString(),
+    date: getDefaultDate(),
     status: "to-do" as TaskStatus,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   useEffect(() => {
     if (task) {
@@ -42,7 +46,7 @@ export const useUpdateTask = (task: TaskType, onSuccess: () => void) => {
     if (task) {
       setFormData({
         description: task.description,
-        date: new Date(task.date).toString(),
+        date: getDefaultDate(),
         status: task.status,
       });
     }
