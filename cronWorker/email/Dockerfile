@@ -3,14 +3,14 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and install dependencies
-COPY ../../package*.json ./  
+COPY ../package*.json ./  
 RUN npm install --omit=dev  
 
 # Copy models (if needed)
-COPY ../../models /app/models  
+COPY ../utils /app/utils  
 
-# Copy only daily email job files
+# Copy only email job files
 COPY . .  
 
-# Run the daily email job
-CMD ["node", "/app/dailyTaskEmail.js"]
+# Run the cleanup job
+CMD ["node", "dailyTaskEmail.js"]
