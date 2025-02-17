@@ -26,13 +26,24 @@ app.use(cookieParser());
 const PORT = process.env.PORT || 7000;
 const MONGO_URL = process.env.MONGO_URL;
 
+const connectMongoDB = async () => {
+  if (mongoose.connection.readyState >= 1) return;
+
+  try {
+    await mongoose.connect(MONGO_URL, {
+      maxPoolSize: 20,
+    });
+  } catch (error) {
+    console.error("MongoDB connection error (cronWorker):", error);
+    process.exit(1);
+  }
+};
+
 // Database Connection
-mongoose
-  .connect(MONGO_URL)
+await connectMongoDB()
   .then(async () => {
     await connectRedis();
     app.listen(PORT);
-    console.log("Running");
   })
   .catch((error) => {
     console.error("Database connection failed:", error.message);

@@ -1,4 +1,5 @@
-import Task from "../../server/models/taskModel.js";
+import Task from "./models/taskModel.js";
+import "./models/userModel.js";
 
 /**
  * Fetch tasks for today, grouped by user, excluding tasks created by guests.
@@ -9,7 +10,7 @@ export const getTasksForToday = async () => {
   const startOfDay = new Date(
     today.getFullYear(),
     today.getMonth(),
-    today.getDate() + 1,
+    today.getDate(),
     8,
     0,
     0,
@@ -18,7 +19,7 @@ export const getTasksForToday = async () => {
   const endOfDay = new Date(
     today.getFullYear(),
     today.getMonth(),
-    today.getDate() + 2,
+    today.getDate() + 1,
     8,
     0,
     0,
