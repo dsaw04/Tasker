@@ -1,0 +1,16 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package.json from cronWorker/
+COPY package*.json ./  
+RUN npm install --omit=dev  
+
+# Copy utils (which contains models)
+COPY utils /app/utils  
+
+# Copy only cleanup job files
+COPY cleanup /app/cleanup  
+
+# Run the cleanup job
+CMD ["node", "/app/cleanup/cleanupJob.js"]
