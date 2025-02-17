@@ -1,5 +1,5 @@
 import { connectRabbitMQ } from "./rabbitmq.js";
-import { startEmailConsumer } from "./emailConsumer.js";
+import { startEmailConsumer } from "./utils/emailConsumer.js";
 
 const startQueueWorker = async () => {
   try {
