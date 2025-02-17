@@ -6,11 +6,9 @@ WORKDIR /app
 COPY package*.json ./  
 RUN npm install --omit=dev  
 
-# Copy utils (which contains models)
-COPY utils /app/utils  
+COPY ./utils /app/utils  
+COPY ./cleanup /app/cleanup  
 
-# Copy only cleanup job files
-COPY cleanup /app/cleanup  
 
 # Run the cleanup job
 CMD ["node", "/app/cleanup/cleanupJob.js"]
