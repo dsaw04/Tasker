@@ -1,5 +1,5 @@
 import { getChannel } from "./rabbitmq.js";
-import { sendDailyTaskEmail } from "./utils/sendgrid.config.js";
+import { sendDailyTaskEmail } from "./sendgrid.config.js";
 
 const QUEUE_NAME = "emailQueue";
 
