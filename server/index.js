@@ -34,7 +34,7 @@ const connectMongoDB = async () => {
       maxPoolSize: 20,
     });
   } catch (error) {
-    console.error("MongoDB connection error (cronWorker):", error);
+    console.error("MongoDB connection error (server):", error);
     process.exit(1);
   }
 };
