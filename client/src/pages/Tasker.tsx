@@ -51,7 +51,7 @@ function Tasker() {
 
   useEffect(() => {
     refetchStreak();
-  }, [tasks, refetchStreak]);
+  }, [refetchStreak]);
 
   return (
     <div className="min-h-screen bg-white items-center flex flex-col">
@@ -133,7 +133,6 @@ function Tasker() {
             <AddTaskModal
               isOpen={isModalOpen}
               onSuccess={() => {
-                refetchStreak();
                 refetch();
               }}
               onClose={closeModal}
@@ -146,7 +145,6 @@ function Tasker() {
               taskName={selectedTask.description}
               onClose={closeModal}
               onSuccess={() => {
-                refetchStreak();
                 refetch();
               }}
             />
@@ -157,7 +155,6 @@ function Tasker() {
               task={selectedTask}
               onClose={closeModal}
               onSuccess={() => {
-                refetchStreak();
                 refetch();
               }}
             />

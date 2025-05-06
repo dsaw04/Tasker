@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Task from "./Task";
 import { TaskType } from "../../types/TaskType";
 
@@ -20,11 +20,21 @@ export default function TaskList({
   onUpdate,
   onMarkDone,
 }: TaskListProps) {
-  const [currentPage, setCurrentPage] = useState(1); 
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
   const tasksPerPage = 4;
   const startIndex = (currentPage - 1) * tasksPerPage;
   const endIndex = startIndex + tasksPerPage;
-  const currentTasks = tasks.slice(startIndex, endIndex);
+  const currentTasks = tasks
+    .map((t) => ({
+      ...t,
+      isOverdue: new Date(t.date).getTime() < now,
+    }))
+    .slice(startIndex, endIndex);
   const totalPages = Math.ceil(tasks.length / tasksPerPage);
 
   const handlePageChange = (page: number) => {

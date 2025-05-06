@@ -68,7 +68,7 @@ export default function Task({
       className={`task-item w-full flex shadow-xl gap-2 border border-gray-200 rounded-3xl`}
     >
       <div
-        className={`w-[2%] ${
+        className={`w-[2%] transition-colors duration-500 ease-in-out ${
           isOverdue
             ? "bg-red-400"
             : status === "to-do"
@@ -83,10 +83,12 @@ export default function Task({
           </h3>
           <p className="text-gray-600">{formatDate(date)}</p>
           {isOverdue ? (
-            <p className="text-red-500">Overdue</p>
+            <p className="transition-colors duration-500 ease-in-out text-red-500">
+              Overdue
+            </p>
           ) : (
             <p
-              className={`status ${
+              className={`status transition-colors duration-500 ease-in-out ${
                 status === "to-do" ? "text-yellow-500" : "text-green-500"
               }`}
             >
