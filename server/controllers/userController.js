@@ -14,12 +14,11 @@ import {
   generateGuestRefreshToken,
 } from "../utils/tokenUtils.js";
 import { createUserMetrics } from "../utils/userMetricUtils.js";
-import { create } from "domain";
 
 //Create a new user.
 export const createUser = async (req, res) => {
   try {
-    const errors = validationResult(req);
+    const errors = validationResult(req); //??
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }

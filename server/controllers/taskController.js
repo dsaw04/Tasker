@@ -58,6 +58,8 @@ export const create = async (req, res) => {
 };
 
 //Fetch all of a given user's tasks.
+
+//FIX ME - remove write from this fetch task.
 export const getAllTasks = async (req, res) => {
   try {
     await handleOverdueTasks(req.user);
@@ -87,6 +89,8 @@ export const getAllTasks = async (req, res) => {
 };
 
 //Search for tasks based on the users query. Returns an empty array if no matches were found.
+
+//might need fixes
 export const searchTasks = async (req, res) => {
   try {
     const { description } = req.query;
@@ -146,6 +150,7 @@ export const updateTask = async (req, res) => {
       });
     }
 
+    //what if it takes 1 minute to update task?
     if (updates.date && new Date(updates.date) > new Date()) {
       task.isOverdue = false;
     }

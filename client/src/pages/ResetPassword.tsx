@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { useAuth } from "../hooks/useAuth";
 import { Blobs } from "../components/Blobs";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, InputAdornment } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { handleError } from "../utils/errorHandler";
+import { AuthContext } from "../context/AuthContext";
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState("");
@@ -17,7 +17,7 @@ const ResetPassword: React.FC = () => {
   const [token] = useState<string | null>(
     new URLSearchParams(window.location.search).get("token")
   );
-  const { resetPassword } = useAuth();
+  const { resetPassword } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {

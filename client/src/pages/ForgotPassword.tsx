@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { useAuth } from "../hooks/useAuth";
 import { Blobs } from "../components/Blobs";
 import { handleError } from "../utils/errorHandler";
+import { AuthContext } from "../context/AuthContext";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { forgotPassword } = useAuth();
+  const { forgotPassword } = useContext(AuthContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

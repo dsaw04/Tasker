@@ -1,25 +1,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
-import apiClient, { setAccessToken } from "../api/apiClient";
-
-export interface AuthContextType {
-  isAuthenticated: boolean;
-  loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  loginAsGuest: () => Promise<void>;
-  loginWithGoogle: () => void;
-  logout: () => Promise<void>;
-  register: (
-    username: string,
-    email: string,
-    password: string
-  ) => Promise<void>;
-  verifyEmail: (code: string) => Promise<string>;
-  getAccessToken: () => string | null;
-  resendVerificationEmail: (email: string) => Promise<void | string>;
-  forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (token: string, password: string) => Promise<void>;
-}
+import apiClient from "../api/apiClient";
+import { handleError } from "../utils/errorHandler";
+import { AuthContextType } from "../types/AuthContextType";
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
@@ -28,8 +11,7 @@ export const AuthContext = createContext<AuthContextType>({
   loginWithGoogle: () => {},
   logout: async () => {},
   register: async () => {},
-  verifyEmail: async () => "",
-  getAccessToken: () => null,
+  verifyEmail: async () => {},
   resendVerificationEmail: async () => {},
   loginAsGuest: async () => {},
   forgotPassword: async () => {},
@@ -40,26 +22,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [accessToken, setAccessTokenState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const updateAccessToken = (token: string | null) => {
-    setAccessTokenState(token);
-    setAccessToken(token);
-  };
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.post(
+        await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/users/refresh`,
           {},
           { withCredentials: true }
         );
-        updateAccessToken(response.data.accessToken);
         setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Failed to authenticate:", error);
+      } catch {
         setIsAuthenticated(false);
       } finally {
         setLoading(false);
@@ -74,41 +48,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const login = async (username: string, password: string) => {
+    setLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/users/login`,
         { username, password },
         { withCredentials: true }
       );
-      updateAccessToken(response.data.accessToken);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
+      setIsAuthenticated(false);
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
 
-  const verifyEmail = async (code: string): Promise<string> => {
+  const verifyEmail = async (code: string) => {
+    setLoading(true);
     try {
-      const response = await apiClient.post("/users/verify", { code });
-
-      if (response.status !== 200) {
-        throw new Error(
-          response.data?.message || "Unexpected response from the server."
-        );
-      }
-
-      return response.data.message;
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/users/verify`,
+        { code },
+        { withCredentials: true }
+      );
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage =
-          error.response.data?.message ||
-          "Failed to verify email. Please try again.";
-        console.error("Email verification failed:", errorMessage);
-        throw new Error(errorMessage);
-      } else {
-        throw new Error("An unexpected error occurred. Please try again.");
-      }
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -117,98 +84,96 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     email: string,
     password: string
   ) => {
+    setLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/users/register`,
         { username, email, password },
         { withCredentials: true }
       );
-      updateAccessToken(response.data.accessToken);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error("Registration failed:", error);
-      throw error;
+      setIsAuthenticated(false);
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
 
-  const resendVerificationEmail = async (email: string): Promise<void | string> => {
+  const resendVerificationEmail = async (email: string) => {
+    setLoading(true);
     try {
-      const response = await apiClient.post(
-        "/users/resend",
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/users/resend`,
         { email },
         { withCredentials: true }
       );
-
-      if (response.status !== 200) {
-        throw new Error(
-          response.data?.message || "Unexpected response from the server."
-        );
-      }
-
-      return response.data.message;
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage =
-          error.response.data?.message ||
-          "Failed to resend verification email. Please try again.";
-        console.error("Resend verification email failed:", errorMessage);
-        throw new Error(errorMessage);
-      } else {
-        console.error("An unexpected error occurred:", error);
-        throw new Error("An unexpected error occurred. Please try again.");
-      }
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
 
   const loginAsGuest = async () => {
+    setLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/users/guest`,
         {},
         { withCredentials: true }
       );
-      updateAccessToken(response.data.token);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error("Guest login failed:", error);
-      throw error;
+      setIsAuthenticated(false);
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
 
   const forgotPassword = async (email: string) => {
+    setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/users/forgot-password`, {
-        email,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/users/forgot-password`,
+        { email },
+        { withCredentials: true }
+      );
     } catch (error) {
-      console.error("Forgot password request failed:", error);
-      throw error;
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
 
   const resetPassword = async (token: string, password: string) => {
+    setLoading(true);
     try {
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/reset-password`, {
-        token,
-        password,
-      });
+      await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/users/reset-password`,
+        { token, password },
+        { withCredentials: true }
+      );
     } catch (error) {
-      console.error("Reset password request failed:", error);
-      throw error;
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
+    setLoading(true);
     try {
       await apiClient.delete("/users/logout", { withCredentials: true });
-      updateAccessToken(null);
       setIsAuthenticated(false);
     } catch (error) {
-      console.error("Logout failed:", error);
+      setIsAuthenticated(false);
+      throw new Error(handleError(error));
+    } finally {
+      setLoading(false);
     }
   };
-
-  const getAccessToken = () => accessToken;
 
   return (
     <AuthContext.Provider
@@ -221,7 +186,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         register,
         verifyEmail,
         resendVerificationEmail,
-        getAccessToken,
         loginAsGuest,
         forgotPassword,
         resetPassword,
